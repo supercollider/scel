@@ -686,7 +686,10 @@ Returns the column to indent to."
   (add-hook 'completion-at-point-functions
             #'sclang-completion-at-point nil 'local)
   (when (fboundp 'company-mode)
-    (add-to-list 'company-backends 'company-capf)))
+    (declare 'company-backends)
+    (add-to-list 'company-backends 'company-capf))
+
+  (run-hooks 'sclang-mode-hook))
 
 ;; =====================================================================
 ;; module initialization
