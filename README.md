@@ -4,14 +4,10 @@ Scel
 SuperCollider/Emacs interface
 
 
-Installation requirements
+Linux Installation requirements
 -------------------------
 
 For the HTML help system, you will need emacs-w3m support.
-
-
-Installation (default)
-----------------------
 
 By default emacs-lisp files are installed in
 
@@ -33,48 +29,46 @@ For the HTML help system to fully function also add
 (require 'w3m)
 ```
 
-
-Installation (detailed)
+Installation (any platform)
 -----------------------
 
-Put all `*.el` files in emacs' load-path. e.g. if you put them in
-`~/emacs/`, add the following lines to `~/.emacs` (or whatever your init
-file is called):
+There are 2 components to install:
+1. The emacs package
+1. The supercollider language extensions (as a quark)
 
-```
-(add-to-list 'load-path "~/emacs")
-(require 'sclang)
+## Installing emacs package
+
+Install as you normally would install something from melpa. 
+
+``` emacs-lisp
+(package-install "scel")
 ```
 
-for the HTML help system to fully function also add
+Or using straight.el
+``` emacs-lisp
+(package! scel :recipe (:host github :repo "supercollider/scel" :files ("el/*.el")))
 ```
+
+## Installing the quark
+
+``` supercollider
+Quarks.install("https://github.com/supercollider/scel");
+```
+## Installing help system
+
+For the HTML help system to fully function also add
+``` emacs-lisp
 (require 'w3m)
 ```
 
-now put all `*.sc` files in sclang's library path, e.g. if you put them
-in a non-standard location, such as `~/SuperCollider/Emacs`, add the
-following to `~/.config/SuperCollider/sclang_conf.yaml` (Linux) or `~/Library/Application Support/SuperCollider/sclang_conf.yaml` (macOS):
+Configuration
+-----------------------
 
+You may need to add the path to supercollider to your exec-path so that it can find the sclang executable.
+
+``` emacs-lisp
+(setq exec-path (append exec-path '("/Applications/SuperCollider.app/Contents/MacOS/")))
 ```
-includePaths:
-    [~/SuperCollider/Emacs]
-```
-
-(note normally this is not needed as they are put into sclang's library
-path during installation with scons).
-
-
-Usage
------
-
-In order to automatically start sclang when invoking emacs, use the following command line:
-
-```
-$> emacs -sclang
-```
-
-you're now ready to edit, inspect and execute sclang code!
-
 
 Getting help
 ------------
