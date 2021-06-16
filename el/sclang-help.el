@@ -42,7 +42,7 @@
     ))
 
 (defcustom sclang-system-help-dir (expand-file-name "Help" (sclang-system-root))
-  "*Directory where the SuperCollider help files are kept. OBSOLETE."
+  "Directory where the SuperCollider system help files are kept."
   :group 'sclang-interface
   :type 'directory
   :options '(:must-match))
