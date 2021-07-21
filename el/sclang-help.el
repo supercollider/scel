@@ -30,16 +30,9 @@
   "Find the common install location for the platform."
   (pcase system-type
     ('darwin (expand-file-name "~/Library/Application Support/SuperCollider"))
-;;   gnu          compiled for a GNU Hurd system.
-;;   gnu/linux    compiled for a GNU/Linux system.
-;;   gnu/kfreebsd compiled for a GNU system with a FreeBSD kernel.
-;;   darwin       compiled for Darwin (GNU-Darwin, macOS, ...).
-;;   ms-dos       compiled as an MS-DOS application.
-;;   windows-nt   compiled as a native W32 application.
-;;   cygwin       compiled using the Cygwin library.
-;; Anything else (in Emacs 26, the possibilities are: aix, berkeley-unix,
-;; hpux, usg-unix-v) indicates some sort of Unix system.
-    ))
+    ('gnu/linux (if (file-exists-p "/usr/local/share/SuperCollider")
+                    "/usr/local/share/SuperCollider"
+                    "/usr/share/SuperCollider"))))
 
 (defcustom sclang-system-help-dir (expand-file-name "Help" (sclang-system-root))
   "Directory where the SuperCollider system help files are kept."
