@@ -1,0 +1,5 @@
+(
+  name: "scel",
+  summary: "SuperCollider/Emacs interface",
+  version: "1.9.9",
+)
