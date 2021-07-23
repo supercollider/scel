@@ -33,7 +33,7 @@ if (SC_EL_BYTECOMPILE)
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 			COMMENT "Creating byte-compiled Emacs lisp ${CMAKE_CURRENT_BINARY_DIR}/${el}c")
 
-		add_custom_target(${el}c ALL
+		add_custom_target(compile_${el}c ALL
 		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${el}c)
 
 		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${el}c
