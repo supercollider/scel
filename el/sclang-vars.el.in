@@ -16,19 +16,23 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs; see the file COPYING.  If not, write to
-;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, 
+;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 ;; Boston, MA 02110-1301, USA.
+
+;;; Commentary:
+;;
+;; This file is included in the distribution in order to convey system
+;; installation variables which are known at compile time, but only when
+;; the library is installed with cmake along with SuperCollider source.
+;;
+;; When using the stand-alone package, this file can be ignored and
+;; the constants it defines will have no effect.
 
 ;;; Code:
 
 (defconst sclang-system-data-dir "@PKG_DATA_DIR@"
-  "Installation dependent data directory.")
-
-(defconst sclang-system-help-dir "@PKG_DATA_DIR@/Help"
-  "Installation dependent help directory.")
-
-(defconst sclang-system-extension-dir "@PKG_DATA_DIR@/Extensions"
-  "Installation dependent extension directory.")
+  "Installation dependent data directory.
+Bound only when library is installed with SuperCollider.")
 
 (provide 'sclang-vars)
 ;;; sclang-vars.el ends here
