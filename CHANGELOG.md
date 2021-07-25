@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+ - Ability to distribute via package managers
  - Support for `completion-at-point-functions` and `company` via `company-capf`
 
 ### Changed

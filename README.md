@@ -1,83 +1,80 @@
-Scel
-====
+# scel - sclang-mode for emacs
 
 SuperCollider/Emacs interface
 
+## Installation
 
-Installation requirements
--------------------------
+The repository contains two subprojects. `/sc` contains the SuperCollider code
+required to implement the emacs interface. `/el` contains the emacs-lisp
+implementation of the mode. Emacs and SuperCollider each have their own package
+managers, so it is required to install each half separately.
 
-For the HTML help system, you will need emacs-w3m support.
+### Installing scel quark
 
+The `scel` Quark is required for emacs to communicate with sclang. Evaluate this in the SuperCollider GUI:
 
-Installation (default)
-----------------------
-
-By default emacs-lisp files are installed in
-
-`$prefix/share/emacs/site-lisp`
-
-SuperCollider files are put in
-
-`$prefix/share/SuperCollider/Extensions/scide_scel`
-
-
-The only thing you need to do is loading the sclang interface in your `~/.emacs`:
-
+``` supercollider
+Quarks.install("https://github.com/supercollider/scel");
 ```
+
+### Installing the emacs mode
+
+Using straight.el
+``` emacs-lisp
+(straight-use-package
+ '(sclang :type git 
+          :host github 
+          :repo "supercollider/scel" 
+          :files ("el/*.el")))
+```
+
+Or download the repo directly to your user config directory
+
+``` shell
+git clone https://github.com/supercollider/scel.git ~/.emacs.d/scel
+```
+``` emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/scel/el/")
 (require 'sclang)
 ```
 
-For the HTML help system to fully function also add
+### On MacOS
+
+If `sclang` executable is not on your path, you may need to add it to your exec-path.
+
+``` emacs-lisp
+(setq exec-path (append exec-path '("/Applications/SuperCollider.app/Contents/MacOS/")))
 ```
+### On Linux
+
+If you are building SuperCollider from source on Linux, this library (both .el
+and .sc files) will be installed by default. To disable it pass the flag
+`-DSC_EL=OFF` as a `cmake` option. See the supercollider readme for more info.
+
+
+## Installation requirements
+
+For the HTML help system, you will need emacs-w3m support, but you can still use without that.
+
+```emacs-lisp
 (require 'w3m)
 ```
 
+## Configuration
 
-Installation (detailed)
------------------------
+To fine-tune the installation from within emacs' graphical customization interface, type:
 
-Put all `*.el` files in emacs' load-path. e.g. if you put them in
-`~/emacs/`, add the following lines to `~/.emacs` (or whatever your init
-file is called):
-
-```
-(add-to-list 'load-path "~/emacs")
-(require 'sclang)
-```
-
-for the HTML help system to fully function also add
-```
-(require 'w3m)
-```
-
-now put all `*.sc` files in sclang's library path, e.g. if you put them
-in a non-standard location, such as `~/SuperCollider/Emacs`, add the
-following to `~/.config/SuperCollider/sclang_conf.yaml` (Linux) or `~/Library/Application Support/SuperCollider/sclang_conf.yaml` (macOS):
-
-```
-includePaths:
-    [~/SuperCollider/Emacs]
-```
-
-(note normally this is not needed as they are put into sclang's library
-path during installation with scons).
+`M-x sclang-customize`
 
 
-Usage
------
+## Usage
 
-In order to automatically start sclang when invoking emacs, use the following command line:
+`M-x sclang-start` or open a `.scd` file and press `C-c C-o`
 
-```
-$> emacs -sclang
-```
-
-you're now ready to edit, inspect and execute sclang code!
+You're now ready to edit, inspect and execute sclang code!
 
 
-Getting help
-------------
+## Getting help
 
 Inside an sclang-mode buffer (e.g. by editing a .sc file), execute
 
@@ -108,18 +105,7 @@ in your `~/.emacs`:
 This ensures that the arrow keys are just for moving through the document, and not from hyperlink to hyperlink, which is the default in w3m-mode.
 
 
-Customization
--------------
-
-To fine-tune the installation from within emacs' graphical customization interface, type:
-
-`M-x sclang-customize`
-
-In particular, you will have to customize `sclang-runtime-directory'.
-
-
-Server control
---------------
+## Server control
 
 In the post buffer window, right-click on the server name; by default the two servers `internal` and `localhost` are available. You will get a menu with common server control operations.
 
