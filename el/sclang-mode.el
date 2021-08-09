@@ -24,10 +24,8 @@
 (declare-function company-mode "ext:company")
 (defvar company-backends)
 
-(eval-when-compile
-  (require 'font-lock)
-  (require 'sclang-util))
-
+(require 'font-lock)
+(require 'sclang-util)
 (require 'sclang-interp)
 (require 'sclang-language)
 (require 'sclang-dev)
