@@ -1,5 +1,7 @@
 ;;; sclang.el --- IDE for working with the SuperCollider language
-;; copyright 2003 stefan kersten <steve@k-hornz.de>
+;; Copyright 2003 stefan kersten <steve@k-hornz.de>
+;; Version: 1.0.0
+;; URL: https://github.com/supercollider/scel
 ;;
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -15,6 +17,13 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301
 ;; USA
+
+;;; Commentary:
+;;
+;; This package provides code for interfacing with sclang and scsynth.
+;; In order to be useful you need to install SuperCollider and the
+;; sc-el Quark. See the README or https://github.com/supercollider/scel
+;; for more information.
 
 ;;; Code:
 (defgroup sclang nil

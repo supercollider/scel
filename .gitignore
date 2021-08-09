@@ -1,1 +1,4 @@
 .DS_Store
+*.elc
+.eldev
+/el/sclang-autoloads.el
