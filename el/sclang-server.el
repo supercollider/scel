@@ -19,7 +19,6 @@
 (require 'sclang-util)
 (require 'sclang-interp)
 (require 'sclang-language)
-(require 'sclang-mode)
 
 (defcustom sclang-server-panel "Server.default.makeWindow"
   "Expression to execute when `sclang-show-server-panel' is invoked."

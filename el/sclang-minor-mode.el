@@ -17,7 +17,6 @@
 ;;;  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
 (require 'sclang-util)
-(require 'sclang-mode)
 
 (easy-mmode-define-minor-mode sclang-minor-mode
   "Toggle sclang-minor-mode.
