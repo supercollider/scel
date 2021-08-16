@@ -23,6 +23,7 @@
 (require 'sclang-util)
 (require 'sclang-interp)
 (require 'sclang-language)
+(require 'sclang-mode)
 (require 'sclang-vars nil 'ignore-missing-file)
 (require 'sclang-minor-mode)
 
