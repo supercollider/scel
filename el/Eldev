@@ -1,7 +1,6 @@
 ; -*- mode: emacs-lisp; lexical-binding: t -*-
-
-;; Uncomment some calls below as needed for your project.
-;(eldev-use-package-archive 'gnu)
-;(eldev-use-package-archive 'melpa)
+;
+;; You can obtain eldev from https://github.com/doublep/eldev
+;; We use it for package development and running tests
 
 (eldev-use-plugin 'autoloads)
