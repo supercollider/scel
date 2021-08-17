@@ -55,22 +55,16 @@
   (interactive)
   (customize-group 'sclang))
 
-(eval-and-compile
-  (let ((load-path
-	 (if (and (boundp 'byte-compile-dest-file)
-		  (stringp byte-compile-dest-file))
-	     (cons (file-name-directory byte-compile-dest-file) load-path)
-	   load-path)))
-    (require 'sclang-util)
-    (require 'sclang-browser)
-    (require 'sclang-interp)
-    (require 'sclang-language)
-    (require 'sclang-document)
-    (require 'sclang-mode)
-    (require 'sclang-minor-mode)
-    (require 'sclang-help)
-    (require 'sclang-server)
-    (require 'sclang-widgets)))
+(require 'sclang-util)
+(require 'sclang-browser)
+(require 'sclang-interp)
+(require 'sclang-language)
+(require 'sclang-document)
+(require 'sclang-mode)
+(require 'sclang-minor-mode)
+(require 'sclang-help)
+(require 'sclang-server)
+(require 'sclang-widgets)
 
 (provide 'sclang)
 

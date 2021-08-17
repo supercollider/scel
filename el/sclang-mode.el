@@ -669,7 +669,7 @@ Returns the column to indent to."
   :group 'sclang-mode
   :type 'hook)
 
-;;;###autoload
+;;;###autoload  (autoload 'sclang-mode "sclang" "Major mode for editing SuperCollider language" t)
 (define-derived-mode sclang-mode prog-mode "SCLang"
   "Major mode for editing SuperCollider language code.
 \\{sclang-mode-map}"

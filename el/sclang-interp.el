@@ -302,6 +302,7 @@ If EOB-P is non-nil, positions cursor at end of buffer."
        (list "-s"))
      (list "-iscel"))))
 
+;;;###autoload  (autoload 'sclang-start "sclang" "Start SuperCollider process." t)
 (defun sclang-start ()
   "Start SuperCollider process."
   (interactive)
