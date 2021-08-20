@@ -6,69 +6,70 @@ SuperCollider/Emacs interface
 
 There are 3 options for installation:
 
-1. Using Emacs' and SuperCollider's own package managers (recommended)
+1. Using SuperCollider Quarks (recommended)
 2. From debian package `supercollider-emacs`
 3. From source
 
 Option #1 is the best cross-platform option, and is recommended. Whatever option
-you choose, you should only install from a single source.
+you choose, make sure not to mix installation methods. In particular, do not
+install the Quark if you already have the supercollider-emacs package or if you
+compiled SuperCollider with the `-DSC_EL=ON` option. Otherwise you will get an
+error from SuperCollider about duplicated classes.
 
-### Install Option 1: Native Packages
+### Install Option 1: SuperCollider's own package manager
 
 The repository contains two subprojects. `/el` contains the emacs-lisp
-implementation. `/scide_scel` contains the SuperCollider code required to
-implement the Emacs interface. Emacs and SuperCollider each have their own
-package managers, so it is required to install each half separately.
+implementation. `/sc` contains the SuperCollider code required to
+implement the Emacs interface. SuperCollider has its own package system
+called Quarks, which we can use to install both halves.
 
-#### Installing scel quark
-
-The `scel` Quark is required for emacs to communicate with sclang. Evaluate this
-code in the SuperCollider GUI:
+Evaluate this code in the SuperCollider GUI by pasting it and pressing
+shift+enter:
 
 ``` supercollider
 Quarks.install("https://github.com/supercollider/scel");
 ```
 
 The scel repository will be downloaded to your local file system and the path
-will be added to your default `sclang_conf.yaml` file. If you want to change the
-yaml file used by your emacs sessions you can customize the
-`sclang-library-configuration-file` variable, but make sure that file loads 
-the scel quark.
+will be added to your default `sclang_conf.yaml` file. (You can find its
+location by evaluating `Platform.userConfigDir`)
 
-#### Installing the emacs mode
+Next, find out where scel was installed. You will use this install-path in your
+emacs config.
 
-Using [straight.el](https://github.com/raxod502/straight.el), put the following
-in your init file:
+``` supercollider
+Quarks.folder.postln;
 
-``` emacs-lisp
-;; in ~/.emacs
-(straight-use-package
- '(sclang :type git 
-          :host github 
-          :repo "supercollider/scel" 
-          :files ("el/*.el")))
+// -> /Users/jxa/Library/Application Support/SuperCollider/downloaded-quarks
 ```
 
-Or download the repo directly to your user config directory
-
-``` shell
-git clone https://github.com/supercollider/scel.git ~/.emacs.d/scel
-```
-
+Now in your emacs config, add the `/el` subdirectory to your load path
 ``` emacs-lisp
 ;; in ~/.emacs
-(add-to-list 'load-path "~/.emacs.d/scel/el/")
+
+;; Paste path from above, appending "/scel/el"
+(add-to-list 'load-path "/Users/jxa/Library/Application Support/SuperCollider/downloaded-quarks/scel/el")
 (require 'sclang)
 ```
-
 #### On macOS
 
 If `sclang` executable is not on your path, you may need to add it to your
 exec-path.
 
 ``` emacs-lisp
+;; in ~/.emacs
 (setq exec-path (append exec-path '("/Applications/SuperCollider.app/Contents/MacOS/")))
 ```
+
+#### Installing with an emacs package manager
+
+It's completely possible to install with
+[straight.el](https://github.com/raxod502/straight.el),
+[use-package](https://github.com/jwiegley/use-package),
+[doom](https://github.com/hlissner/doom-emacs), etc. Instructions for doing so
+are beyond the scope of this README, but note that `autoloads` are implemented
+for entry-point functions so if you like to have a speedy start-up time you can
+use the `:defer t` option.
 
 ### Install Option 2: Debian package
 
@@ -97,6 +98,20 @@ the rest of the functionality without the w3m dependency.
 (require 'w3m)
 ```
 
+## Usage
+
+The main function which starts interacting with the sclang interpreter is
+`sclang-start`. You can execute that anywhere with `M-x sclang-start`, or from
+within a `.scd` buffer by pressing `C-c C-o`.
+
+If you know you want to launch sclang when you start emacs you can use the `-f`
+option to execute that function right away:
+
+``` shell
+# in your terminal
+emacs -f sclang-start
+```
+
 ## Configuration
 
 To fine-tune the installation from within emacs' graphical customization
@@ -104,13 +119,10 @@ interface, type:
 
 `M-x sclang-customize`
 
-
-## Usage
-
-Open a `.scd` file and press `C-c C-o` to start the interpreter.
-
-You're now ready to edit, inspect and execute sclang code!
-
+If you want to change from the default `sclang_conf.yaml` file used by your
+emacs sessions you can customize the `sclang-library-configuration-file`
+variable, but make sure that file loads the scel quark, or you won't be
+able to run sclang code.
 
 ## Getting help
 
