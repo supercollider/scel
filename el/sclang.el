@@ -50,6 +50,7 @@
   "Options for the SuperCollider process."
   :group 'sclang-interface)
 
+;;;###autoload
 (defun sclang-customize ()
   "Customize sclang variables."
   (interactive)

@@ -11,7 +11,7 @@ There are 3 options for installation:
 3. From source
 
 Option #1 is the best cross-platform option, and is recommended. Whatever option
-you choose, make sure not to mix installation methods. In particular, do not
+you choose, *make sure not to mix installation methods*. In particular, do not
 install the Quark if you already have the supercollider-emacs package or if you
 compiled SuperCollider with the `-DSC_EL=ON` option. Otherwise you will get an
 error from SuperCollider about duplicated classes.
@@ -40,7 +40,7 @@ emacs config.
 ``` supercollider
 Quarks.folder.postln;
 
-// -> /Users/jxa/Library/Application Support/SuperCollider/downloaded-quarks
+// -> /Users/<username>/Library/Application Support/SuperCollider/downloaded-quarks
 ```
 
 Now in your emacs config, add the `/el` subdirectory to your load path
@@ -48,7 +48,7 @@ Now in your emacs config, add the `/el` subdirectory to your load path
 ;; in ~/.emacs
 
 ;; Paste path from above, appending "/scel/el"
-(add-to-list 'load-path "/Users/jxa/Library/Application Support/SuperCollider/downloaded-quarks/scel/el")
+(add-to-list 'load-path "/Users/<username>/Library/Application Support/SuperCollider/downloaded-quarks/scel/el")
 (require 'sclang)
 ```
 #### On macOS
@@ -88,10 +88,18 @@ install this library along with it. The cmake `-DSC_EL` flag controls whether
 scel will be compiled. On Linux machines `-DSC_EL=ON` by default. See the
 supercollider README files for more info.
 
-## Installation requirements
+``` emacs-lisp
+;; in ~/.emacs
+(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/SuperCollider/") ;; path will depend on your compilation settings
+(require 'sclang)
+```
 
-For the HTML help system, you will need emacs-w3m support, but you can still use
-the rest of the functionality without the w3m dependency.
+## Optional Installation Requirements
+
+There are two options for SuperCollider help files. They can be opened in the
+help browser that ships with SuperCollider, or if you prefer an emacs-only
+workflow they can be opened using the w3m browser. The browse-in-emacs option
+requires an additional dependency.
 
 ```emacs-lisp
 ;; in ~/.emacs
@@ -119,10 +127,11 @@ interface, type:
 
 `M-x sclang-customize`
 
-If you want to change from the default `sclang_conf.yaml` file used by your
-emacs sessions you can customize the `sclang-library-configuration-file`
-variable, but make sure that file loads the scel quark, or you won't be
-able to run sclang code.
+NOTE: If you use an sclang configuration file different from the default
+`sclang_conf.yaml`, you need to specify it in scel by customizing the
+`sclang-library-configuration-file `variable. Otherwise, even after installing
+the Quark in SuperCollider, you won't be able to run sclang code in emacs.
+
 
 ## Getting help
 
