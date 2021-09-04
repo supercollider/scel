@@ -85,8 +85,7 @@ sudo apt install supercollider-emacs
 
 If you are building SuperCollider from source, you can optionally compile and
 install this library along with it. The cmake `-DSC_EL` flag controls whether
-scel will be compiled. On Linux machines `-DSC_EL=ON` by 
-. See the
+scel will be compiled. On Linux machines `-DSC_EL=ON` by default. See the
 supercollider README files for more info.
 
 ``` emacs-lisp
