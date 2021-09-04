@@ -467,9 +467,9 @@ Change this if \"cat\" has a non-standard name or location."
 (defun sclang-default-command-handler (fun arg)
   "Default command handler.
 Displays short message on error."
-  (condition-case nil
+  (condition-case err
       (funcall fun arg)
-    (error (sclang-message "Error in command handler") nil)))
+    (error (sclang-message (format "Error in command handler: %s" err)) nil)))
 
 (defun sclang-debug-command-handler (fun arg)
   "Debugging command handler.
@@ -489,7 +489,7 @@ With arg, activate debugging iff arg is positive."
 	(if (or (and arg (> arg 0))
 		(eq sclang-command-handler 'sclang-debug-command-handler))
 	    'sclang-default-command-handler
-	  'sclang-default-command-handler))
+	  'sclang-debug-command-handler))
   (sclang-message "Command handler debugging %s."
 		  (if (eq sclang-command-handler 'sclang-debug-command-handler)
 		      "enabled"
