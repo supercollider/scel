@@ -27,9 +27,9 @@
 ;;; Code:
 
 (require 'cl-lib)
-(eval-when-compile (require 'sclang-util)
-                   (require 'sclang-language))
-(eval-and-compile (require 'sclang-interp))
+(require 'sclang-util)
+(require 'sclang-language)
+(require 'sclang-interp)
 
 (defvar sclang-widgets nil)
 (make-variable-buffer-local 'sclang-widgets)

@@ -24,15 +24,29 @@
 (require 'sclang-interp)
 (require 'sclang-language)
 (require 'sclang-mode)
-(require 'sclang-vars)
+(require 'sclang-vars nil 'ignore-missing-file)
 (require 'sclang-minor-mode)
 
-(defcustom sclang-help-directory "~/SuperCollider/Help"
-  "*Directory where the SuperCollider help files are kept. OBSOLETE."
+(defun sclang-system-root ()
+  "Find the common install location for the platform."
+  (cond
+   ((boundp 'sclang-system-data-dir)
+    sclang-system-data-dir)
+
+   ((eql 'darwin system-type)
+    (expand-file-name "~/Library/Application Support/SuperCollider"))
+
+   ((and (eql 'gnu/linux system-type)
+         (file-exists-p "/usr/local/share/SuperCollider"))
+    "/usr/local/share/SuperCollider")
+
+   ((eql 'gnu/linux system-type)
+    "/usr/share/SuperCollider")))
+
+(defcustom sclang-system-help-dir (expand-file-name "Help" (sclang-system-root))
+  "Installation dependent help directory."
   :group 'sclang-interface
-  :version "21.3"
-  :type 'directory
-  :options '(:must-match))
+  :type 'directory)
 
 (defcustom sclang-help-path (list sclang-system-help-dir
 				  "~/.local/share/SuperCollider/Help")
@@ -40,6 +54,11 @@
   :group 'sclang-interface
   :version "21.4"
   :type '(repeat directory))
+
+(defcustom sclang-system-extension-dir (expand-file-name "Extensions" (sclang-system-root))
+  "Installation dependent extension directory."
+  :group 'sclang-interface
+  :type 'directory)
 
 (defconst sclang-extension-path (list sclang-system-extension-dir
 				      "~/.local/share/SuperCollider/Extensions")

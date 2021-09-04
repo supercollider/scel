@@ -1,3 +1,5 @@
+;;; package: sclang-util --- Utility helpers for sclang
+;;
 ;; copyright 2003-2005 stefan kersten <steve@k-hornz.de>
 ;;
 ;; This program is free software; you can redistribute it and/or
@@ -83,4 +85,4 @@
 
 (provide 'sclang-util)
 
-;; EOF
+;;; sclang-util.el ends here

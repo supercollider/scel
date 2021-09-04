@@ -15,9 +15,8 @@
 ;; Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301
 ;; USA
 
-(eval-when-compile
-  (require 'sclang-util)
-  (require 'compile))
+(require 'sclang-util)
+(require 'compile)
 
 ;; =====================================================================
 ;; post buffer access
@@ -303,6 +302,7 @@ If EOB-P is non-nil, positions cursor at end of buffer."
        (list "-s"))
      (list "-iscel"))))
 
+;;;###autoload  (autoload 'sclang-start "sclang" "Start SuperCollider process." t)
 (defun sclang-start ()
   "Start SuperCollider process."
   (interactive)

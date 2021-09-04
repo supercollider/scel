@@ -1,0 +1,6 @@
+; -*- mode: emacs-lisp; lexical-binding: t -*-
+;
+;; You can obtain eldev from https://github.com/doublep/eldev
+;; We use it for package development and running tests
+
+(eldev-use-plugin 'autoloads)
