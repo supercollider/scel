@@ -31,7 +31,7 @@ Quarks.install("https://github.com/supercollider/scel");
 ```
 
 The scel repository will be downloaded to your local file system and the path
-will be added to your default `sclang_conf.yaml` file. (You can find its
+will be added to your currently used `sclang_conf.yaml` file. (You can find its
 location by evaluating `Platform.userConfigDir`)
 
 Next, find out where scel was installed. You will use this install-path in your
@@ -85,7 +85,8 @@ sudo apt install supercollider-emacs
 
 If you are building SuperCollider from source, you can optionally compile and
 install this library along with it. The cmake `-DSC_EL` flag controls whether
-scel will be compiled. On Linux machines `-DSC_EL=ON` by default. See the
+scel will be compiled. On Linux machines `-DSC_EL=ON` by 
+. See the
 supercollider README files for more info.
 
 ``` emacs-lisp
