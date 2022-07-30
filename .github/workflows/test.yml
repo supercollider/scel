@@ -7,6 +7,7 @@ on:
   pull_request:
     paths-ignore:
       - '**.md'
+      - '**.org'
 
 jobs:
   test:
@@ -15,20 +16,32 @@ jobs:
       matrix:
         emacs_version:
           - 27.2
-          - 26.3
-          - 25.3
-
+          - 28.1
+          - snapshot
     steps:
     - name: Set up Emacs
       uses: purcell/setup-emacs@master
       with:
         version: ${{matrix.emacs_version}}
 
+    - name: Install w3m
+      run: sudo apt-get install -y w3m
+
     - name: Install Eldev
       run: curl -fsSL https://raw.github.com/doublep/eldev/master/webinstall/github-eldev | sh
 
     - name: Check out the elisp source code
       uses: actions/checkout@v2
+
+    # - name: Lint source code with elisp-lint
+    #   run: |
+    #     cd el
+    #     eldev -p -dtT -q lint elisp-lint
+
+    - name: Lint documentation with checkdoc
+      run: |
+        cd el
+        eldev -p -dtT lint doc
 
     - name: Test the uncompiled source
       run: |
