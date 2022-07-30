@@ -1,7 +1,9 @@
-;;; package: sclang-util --- Utility helpers for sclang
+;;; sclang-util.el --- Utility helpers for sclang -*- coding: utf-8;
 ;;
-;; copyright 2003-2005 stefan kersten <steve@k-hornz.de>
-;;
+;; Copyright 2003-2005 stefan kersten <steve@k-hornz.de>
+
+;;; License:
+
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
 ;; published by the Free Software Foundation; either version 2 of the
@@ -17,13 +19,20 @@
 ;; Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301
 ;; USA
 
+;;; Commentary:
+;; Utility helpers for sclang
+
+;;; Code:
 (defun sclang-message (string &rest args)
+  "Create a message from STRING with optional ARGS."
   (message "SCLang: %s" (apply 'format string args)))
 
-(defun sclang-make-buffer-name (string &optional private-p)
-  (concat (and private-p " ") "*SCLang:" string "*"))
+(defun sclang-make-buffer-name (name &optional private-p)
+  "Set the buffer name to NAME (optimally PRIVATE-P)."
+  (concat (and private-p " ") "*SCLang:" name "*"))
 
 (defun sclang-make-prompt-string (prompt default)
+  "Return a prompt string using PROMPT and DEFAULT."
   (if (and default (string-match "\\(:\\)\\s *" prompt))
       (replace-match
        (format " (default %s):" default)
@@ -31,22 +40,23 @@
     prompt))
 
 (defun sclang-string-to-int32 (str)
-  "Convert first 4 bytes of str (network byteorder) to 32 bit integer."
-  (logior (lsh (logand (aref str 0) #XFF) 24)
-	  (lsh (logand (aref str 1) #XFF) 16)
-	  (lsh (logand (aref str 2) #XFF) 8)
+  "Convert first 4 bytes of STR (network byteorder) to 32 bit integer."
+  (logior (ash (logand (aref str 0) #XFF) 24)
+	  (ash (logand (aref str 1) #XFF) 16)
+	  (ash (logand (aref str 2) #XFF) 8)
 	  (logand (aref str 3) #XFF)))
 
 (defun sclang-int32-to-string (n)
-  "Convert 32 bit integer n to 4 byte string (network byte order)."
+  "Convert 32 bit integer N to 4 byte string (network byte order)."
   (let ((str (make-string 4 0)))
-    (aset str 0 (logand (lsh n -24) #XFF))
-    (aset str 1 (logand (lsh n -16) #XFF))
-    (aset str 2 (logand (lsh n  -8) #XFF))
+    (aset str 0 (logand (ash n -24) #XFF))
+    (aset str 1 (logand (ash n -16) #XFF))
+    (aset str 2 (logand (ash n  -8) #XFF))
     (aset str 3 (logand          n  #XFF))
     str))
 
 (defun sclang-compress-newlines (&optional buffer)
+  "Compress newlines (optionally in BUFFER)."
   (with-current-buffer (or buffer (current-buffer))
     (save-excursion
       (goto-char (point-min))
