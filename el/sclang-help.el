@@ -1,4 +1,4 @@
-;;; sclang-help.el --- IDE for working with SuperCollider -*- coding: utf-8;
+;;; sclang-help.el --- IDE for working with SuperCollider -*- coding: utf-8; -*-
 ;;
 ;; Copyright 2003 stefan kersten <steve@k-hornz.de>
 

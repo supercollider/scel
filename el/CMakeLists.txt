@@ -4,6 +4,13 @@ mark_as_advanced(SC_EL_BYTECOMPILE)
 file(GLOB scel_sources
 	 RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.el)
 
+file(GLOB_RECURSE local-load-path
+	LIST_DIRECTORIES true
+	"~/.emacs.d/site-lisp/*"
+	"~/.emacs.d/elpa/*")
+
+set(all_scel_sources ${scel_sources} sclang-vars.el)
+
 set(PKG_DATA_DIR ${CMAKE_INSTALL_PREFIX}/share/SuperCollider)
 
 configure_file(sclang-vars.el.in
@@ -27,6 +34,7 @@ if (SC_EL_BYTECOMPILE)
 		add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${el}c
 			COMMAND ${EMACS_EXECUTABLE} -batch
 				-L ${CMAKE_CURRENT_BINARY_DIR}
+				-L ${local-load-path}
 				-f batch-byte-compile
 				${CMAKE_CURRENT_BINARY_DIR}/${el}
 			DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${el}
