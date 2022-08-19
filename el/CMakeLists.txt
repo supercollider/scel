@@ -6,6 +6,8 @@ set(PKG_DATA_DIR ${CMAKE_INSTALL_PREFIX}/share/SuperCollider)
 file(GLOB scel_sources
 	 RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.el)
 
+list(REMOVE_ITEM scel_sources ".dir-locals.el")
+
 # if w3m in installed locally add to the load-path
 file(GLOB local-load-path
 	LIST_DIRECTORIES true
