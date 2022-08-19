@@ -4,3 +4,4 @@
 ;; We use it for package development and running tests
 
 (eldev-use-plugin 'autoloads)
+(eldev-use-package-archive 'melpa)

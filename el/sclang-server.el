@@ -1,5 +1,9 @@
-;; copyright 2003-2005 stefan kersten <steve@k-hornz.de>
+;;; sclang-server.el --- IDE for working with SuperCollider -*- coding: utf-8;
 ;;
+;; Copyright 2003 stefan kersten <steve@k-hornz.de>
+
+;;; License:
+
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
 ;; published by the Free Software Foundation; either version 2 of the
@@ -15,18 +19,24 @@
 ;; Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301
 ;; USA
 
+
+;;; Commentary:
+;; Interface to the sclang server
+
 (require 'cl-lib)
 (require 'sclang-util)
 (require 'sclang-interp)
 (require 'sclang-language)
 (require 'sclang-mode)
 
+;;; Code:
+
 (defcustom sclang-server-panel "Server.default.makeWindow"
   "Expression to execute when `sclang-show-server-panel' is invoked."
   :group 'sclang-interface
   :type '(choice (const "Server.default.makeWindow")
-		 (const "\\SCUM.asClass.do { \\SCUM.asClass.desktop.showServerPanel }")
-		 string))
+                 (const "\\SCUM.asClass.do { \\SCUM.asClass.desktop.showServerPanel }")
+                 string))
 
 (defvar sclang-server-alist nil
   "Alist of currently defined synthesis servers.")
@@ -47,20 +57,22 @@
   "Face for highlighting a server's running state in the mode-line.")
 
 (defun sclang-get-server (&optional name)
+  "Get sclang server (optionally by NAME)."
   (unless name (setq name sclang-current-server))
   (cdr (assq name sclang-server-alist)))
 
 (defun sclang-set-server (&optional name)
+  "Set current sclang server (optionally by NAME)."
   (unless name (setq name sclang-current-server))
   (setq sclang-current-server
-	(car (or (assq name sclang-server-alist)
-		 (car sclang-server-alist)))))
+        (car (or (assq name sclang-server-alist)
+                 (car sclang-server-alist)))))
 
 (sclang-set-command-handler
  '_updateServer
  (lambda (arg)
    (setq sclang-server-alist
-	 (sort (cdr arg) (lambda (a b) (string-lessp (car a) (car b)))))
+         (sort (cdr arg) (lambda (a b) (string-lessp (car a) (car b)))))
    (setq sclang-default-server (car arg))
    (unless sclang-current-server-initialized
      ;; only set the current server automatically once after startup
@@ -73,24 +85,27 @@
   (interactive)
   (sclang-set-server)
   (let ((list (or (cdr (cl-member-if (lambda (assoc)
-				       (eq (car assoc) sclang-current-server))
-				     sclang-server-alist))
-		  sclang-server-alist)))
+                                       (eq (car assoc) sclang-current-server))
+                                     sclang-server-alist))
+                  sclang-server-alist)))
     (setq sclang-current-server (car (car list))))
   (sclang-update-server-info))
 
-(defun sclang-mouse-next-server (event)
+(defun sclang-mouse-next-server (_event)
   "Select next server for display."
   (interactive "e")
   (sclang-next-server))
 
 (defun sclang-server-running-p (&optional name)
+  "Is the sclang server NAME running?"
   (plist-get (sclang-get-server name) 'running))
 
 (defun sclang-server-booting-p (&optional name)
+  "Is the sclang server NAME running?"
   (plist-get (sclang-get-server name) 'booting))
 
 (defun sclang-create-server-menu (title)
+  "Create the server menu with TITLE."
   (easy-menu-create-menu
    title
    '(
@@ -101,6 +116,7 @@
      ["Make Default" sclang-server-make-default])))
 
 (defun sclang-server-fill-mouse-map (map prefix)
+  "Fill mouse MAP using PREFIX."
   (define-key map (vector prefix 'mouse-1) 'sclang-mouse-next-server)
   (define-key map (vector prefix 'down-mouse-3) (sclang-create-server-menu "Commands"))
   map)
@@ -109,7 +125,7 @@
   "Keymap used for controlling servers in the mode line.")
 
 (defun sclang-server-fill-key-map (map)
-  "Fill server prefix map."
+  "Fill server keymap MAP."
   (define-key map [?b] 'sclang-server-boot)
   (define-key map [?d] 'sclang-server-display-default)
   (define-key map [?f] 'sclang-server-free-all)
@@ -119,11 +135,11 @@
   (define-key map [?p] 'sclang-show-server-panel)
   (define-key map [?q] 'sclang-server-quit)
   (cl-flet ((fill-record-map (map)
-			  (define-key map [?n] 'sclang-server-prepare-for-record)
-			  (define-key map [?p] 'sclang-server-pause-recording)
-			  (define-key map [?r] 'sclang-server-record)
-			  (define-key map [?s] 'sclang-server-stop-recording)
-			  map))
+              (define-key map [?n] 'sclang-server-prepare-for-record)
+              (define-key map [?p] 'sclang-server-pause-recording)
+              (define-key map [?r] 'sclang-server-record)
+              (define-key map [?s] 'sclang-server-stop-recording)
+              map))
     (define-key map [?r] (fill-record-map (make-sparse-keymap))))
   map)
 
@@ -133,27 +149,28 @@
 (defun sclang-get-server-info-string ()
   "Return a mode-line string for the current server."
   (let* ((name (if sclang-current-server (symbol-name sclang-current-server) "-------"))
-	 (server (sclang-get-server))
-	 (running-p (if server (plist-get server 'running)))
-	 (string (propertize
-		  name
-		  'face (if running-p sclang-server-running-face)
-		  'help-echo "mouse-1: next server, mouse-3: command menu"
-		  'keymap sclang-server-mouse-map))
-	 ;; (make-mode-line-mouse-map 'mouse-1 'sclang-mouse-next-server)))
-	 (address (if (and server (not (eq (plist-get server 'type) 'internal)))
-		      (format " (%s)" (plist-get server 'address))
-		    ""))
-	 (info (if running-p
-		   (mapcar 'number-to-string
-			   (plist-get (sclang-get-server) 'info))
-		 '("---" "---" "----" "----" "----" "----"))))
+         (server (sclang-get-server))
+         (running-p (if server (plist-get server 'running)))
+         (string (propertize
+                  name
+                  'face (if running-p sclang-server-running-face)
+                  'help-echo "mouse-1: next server, mouse-3: command menu"
+                  'keymap sclang-server-mouse-map))
+         ;; (make-mode-line-mouse-map 'mouse-1 'sclang-mouse-next-server)))
+         (address (if (and server (not (eq (plist-get server 'type) 'internal)))
+                      (format " (%s)" (plist-get server 'address))
+                    ""))
+         (info (if running-p
+                   (mapcar 'number-to-string
+                           (plist-get (sclang-get-server) 'info))
+                 '("---" "---" "----" "----" "----" "----"))))
     (apply 'format "%s%s %3s|%3s %% u: %4s s: %4s g: %4s d: %4s" string address info)))
 
 (defvar sclang-server-info-string (sclang-get-server-info-string)
   "Info string used in the post buffer mode line.")
 
 (defun sclang-update-server-info ()
+  "Update server info in the modeline."
   (interactive)
   (sclang-set-server)
   (setq sclang-server-info-string (sclang-get-server-info-string))
@@ -164,9 +181,11 @@
 ;; =====================================================================
 
 (defun sclang-perform-server-command (command &rest args)
+  "Perform server COMMAND with ARGS."
   (sclang-eval-string
-   (sclang-format "Server.named.at(%o.asSymbol).performList(\\tryPerform, %o.asSymbol.asArray ++ %o)"
-		  sclang-current-server command args)
+   (sclang-format
+    "Server.named.at(%o.asSymbol).performList(\\tryPerform, %o.asSymbol.asArray ++ %o)"
+    sclang-current-server command args)
    nil))
 
 (defun sclang-server-boot ()
@@ -213,15 +232,15 @@ if (server.notNil) {
     nil))
 
 (defun sclang-server-dump-osc (&optional code)
-  "Set the current server's dump OSC mode."
+  "Set the current server's dump OSC mode (with optional CODE)."
   (interactive "P")
   (sclang-perform-server-command "dumpOSC"
-				 (cond ((consp code) 0)
-				       ((null code) 1)
-				       (t code))))
+                                 (cond ((consp code) 0)
+                                       ((null code) 1)
+                                       (t code))))
 
 (defun sclang-server-prepare-for-record (&optional path)
-  "Prepare current server for recording a sound file."
+  "Prepare current server for recording a sound file (with optional PATH)."
   (interactive
    (list
     (and current-prefix-arg (read-file-name "Record to file: "))))
@@ -242,10 +261,10 @@ if (server.notNil) {
   (interactive)
   (sclang-perform-server-command "stopRecording"))
 
-(defun sclang-set-server-latency (lat)
-  "Set the current server's `latency' instance variable."
+(defun sclang-set-server-latency (latency)
+  "Set the current server's LATENCY instance variable."
   (interactive "nSet latency: ")
-  (sclang-perform-server-command "latency_" lat))
+  (sclang-perform-server-command "latency_" latency))
 
 (defun sclang-show-server-latency ()
   "Show the current server's latency."
@@ -263,17 +282,18 @@ if (server.notNil) {
 ;; =====================================================================
 
 (add-hook 'sclang-mode-hook
-	  (lambda ()
-	    ;; install server mode line in post buffer
-	    (when (string= (buffer-name) sclang-post-buffer)
-	      (setq mode-line-format '("-" sclang-server-info-string)))
-	    ;; install server prefix keymap
-	    (define-key sclang-mode-map "\C-c\C-p" sclang-server-key-map)))
+          (lambda ()
+            ;; install server mode line in post buffer
+            (when (string= (buffer-name) sclang-post-buffer)
+              (setq mode-line-format '("-" sclang-server-info-string)))
+            ;; install server prefix keymap
+            (define-key sclang-mode-map "\C-c\C-p" sclang-server-key-map)))
 
 (add-hook 'sclang-library-shutdown-hook
-	  (lambda ()
-	    (setq sclang-current-server-initialized nil)))
+          (lambda ()
+            (setq sclang-current-server-initialized nil)))
+
 
 (provide 'sclang-server)
 
-;; EOF
+;;; sclang-server.el ends here

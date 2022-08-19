@@ -1,8 +1,15 @@
-;;; sclang.el --- IDE for working with the SuperCollider language
-;; Copyright 2003 stefan kersten <steve@k-hornz.de>
-;; Version: 1.0.0
-;; URL: https://github.com/supercollider/scel
+;;; sclang.el --- IDE for working with SuperCollider -*- coding: utf-8; lexical-binding: t -*-
 ;;
+;; Copyright 2003 stefan kersten <steve@k-hornz.de>
+;;
+;; Author: stefan kersten
+;; Keywords: supercollider, multimedia, languages, tools
+;; Version: 1.1.0
+;; Package-Requires: ((emacs "27.1") (w3m "0.0"))
+;; URL: https://github.com/supercollider/scel
+
+;;; License:
+
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
 ;; published by the Free Software Foundation; either version 2 of the
@@ -22,10 +29,21 @@
 ;;
 ;; This package provides code for interfacing with sclang and scsynth.
 ;; In order to be useful you need to install SuperCollider and the
-;; sc-el Quark. See the README or https://github.com/supercollider/scel
+;; sc-el Quark.  See the README or https://github.com/supercollider/scel
 ;; for more information.
+;;
+;; Recent versions of w3m use tab-line which is only available after 27.1
+;; However sclang should work on Emacs 26.3 to 27.1 without the help browser.
+
+;;; Credits:
+;;
+;; stefan kersten <steve@k-hornz.de>
+;; and everyone in...
+;;        git shortlog -s | sort -r | cut -c8-
+
 
 ;;; Code:
+
 (defgroup sclang nil
   "IDE for working with the SuperCollider language."
   :group 'languages)
@@ -43,7 +61,7 @@
   :group 'sclang)
 
 (defgroup sclang-programs nil
-  "Paths to programs used by sclang-mode."
+  "Paths to programs used by `sclang-mode'."
   :group 'sclang-interface)
 
 (defgroup sclang-options nil

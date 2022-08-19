@@ -1,5 +1,9 @@
-;; copyright 2003 stefan kersten <steve@k-hornz.de>
+;;; sclang-help.el --- IDE for working with SuperCollider -*- coding: utf-8; -*-
 ;;
+;; Copyright 2003 stefan kersten <steve@k-hornz.de>
+
+;;; License:
+
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
 ;; published by the Free Software Foundation; either version 2 of the
@@ -15,11 +19,17 @@
 ;; Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301
 ;; USA
 
+;;; Commentary:
+;; Access SuperCollider help files.
+
+;;; Code:
+
 (eval-when-compile
   (require 'font-lock))
 
-;; (require 'w3m) ;; not needed during compilation
+(require 'w3m)
 (require 'cl-lib)
+
 (require 'sclang-util)
 (require 'sclang-interp)
 (require 'sclang-language)
@@ -49,7 +59,7 @@
   :type 'directory)
 
 (defcustom sclang-help-path (list sclang-system-help-dir
-				  "~/.local/share/SuperCollider/Help")
+                                  "~/.local/share/SuperCollider/Help")
   "List of directories where SuperCollider help files are kept."
   :group 'sclang-interface
   :version "21.4"
@@ -61,7 +71,7 @@
   :type 'directory)
 
 (defconst sclang-extension-path (list sclang-system-extension-dir
-				      "~/.local/share/SuperCollider/Extensions")
+                                      "~/.local/share/SuperCollider/Extensions")
   "List of SuperCollider extension directories.")
 
 (defcustom sclang-help-fill-column fill-column
@@ -87,28 +97,31 @@
 (defcustom sclang-help-filters
   '(("p\\.p\\([0-9]+\\)" . "#p\\1")
     ("<p class=\"\\(.*\\)\">\\(.*\\)</p>" . "<div id=\"\\1\">\\2</div>"))
-  "list of pairs of (regexp . filter) defining html-tags to be replaced by the function sclang-help-substitute-for-filters"
+  "Filters to replace html tags.
+List of pairs of (regexp . filter) defining html-tags to be replaced
+using the function `sclang-help-substitute-for-filters'."
   :group 'sclang-interface
   :type '(repeat (cons (string :tag "match") (string :tag "replacement"))))
 
 (defun sclang-help-substitute-for-filters (&rest args)
-  "substitute various tags in SCs html-docs"
+  "Substitute various tags in SCs html-docs.
+Optional argument ARGS unused?"
   (mapcar #'(lambda (filter)
-	      (let ((regexp (car filter))
-		    (to-string (cdr filter)))
-		(goto-char (point-min))
-		(while (re-search-forward regexp nil t)
-		  (replace-match to-string nil nil))))
-	  sclang-help-filters))
+              (let ((regexp (car filter))
+                    (to-string (cdr filter)))
+                (goto-char (point-min))
+                (while (re-search-forward regexp nil t)
+                  (replace-match to-string nil nil))))
+          sclang-help-filters))
 
 ;; w3m's content-filtering system
 (setq w3m-use-filter t)
 
+;; checks if w3m-filter is loaded.  Is `eval-after-load' necessary here?
 (eval-after-load "w3m-filter"
   '(add-to-list 'w3m-filter-rules
-		;; run on all files read by w3m...
+                ;; run on all files read by w3m...
                 '(".*" sclang-help-substitute-for-filters)))
-
 
 (defvar sclang-help-topic-alist nil
   "Alist mapping help topics to file names.")
@@ -136,40 +149,51 @@
 ;; =====================================================================
 
 (defun sclang-get-help-file (topic)
+  "Get the help file for TOPIC."
   (let ((topic (or (cdr (assoc topic sclang-special-help-topics)) topic)))
     (cdr (assoc topic sclang-help-topic-alist))))
 
 (defun sclang-get-help-topic (file)
+  "Get the help topic for FILE."
   (let ((topic (car (rassoc file sclang-help-topic-alist))))
     (or (car (rassoc topic sclang-special-help-topics)) topic)))
 
 (defun sclang-help-buffer-name (topic)
+  "Set the help buffer name to TOPIC."
   (sclang-make-buffer-name (concat "Help:" topic)))
 
+;; file predicate functions
+
 (defun sclang-rtf-file-p (file)
+  "Does an rtf FILE exist?"
   (let ((case-fold-search t))
     (string-match ".*\\.rtf$" file)))
 
-;; ========= ADDITION for HTML help files
 (defun sclang-html-file-p (file)
-   (let ((case-fold-search t))
-     (string-match ".*\\.html?$" file)))
+  "Does an html FILE exist?"
+  (let ((case-fold-search t))
+    (string-match ".*\\.html?$" file)))
 
 (defun sclang-sc-file-p (file)
+  "Does an sc FILE exist?"
   (let ((case-fold-search t))
     (string-match ".*\\.sc$" file)))
 
 (defun sclang-scd-file-p (file)
+  "Does an scd FILE exist?"
   (let ((case-fold-search t))
     (string-match ".*\\.scd$" file)))
 
 (defun sclang-help-file-p (file)
+  "Is FILE a help file?"
   (string-match sclang-help-file-regexp file))
 
+
 (defun sclang-help-topic-name (file)
-  (if (string-match sclang-help-file-regexp file)
-      (cons (file-name-nondirectory (replace-match "" nil nil file 1))
-	    file)))
+  "Get the help topic from FILE."
+  (when (string-match sclang-help-file-regexp file)
+    (cons (file-name-nondirectory (replace-match "" nil nil file 1))
+          file)))
 
 ;; =====================================================================
 ;; rtf parsing
@@ -178,7 +202,7 @@
 (defconst sclang-rtf-face-change-token "\0")
 
 (defun sclang-fill-rtf-syntax-table (table)
-  ;; character quote
+  "Fill RTF syntax TABLE."
   (modify-syntax-entry ?\\ "/" table)
   (modify-syntax-entry ?\" "." table)
   (modify-syntax-entry ?\{ "(" table)
@@ -193,8 +217,8 @@
   "Syntax table used for RTF parsing.")
 
 (defvar sclang-rtf-font-map '((Helvetica . variable-pitch)
-			      (Helvetica-Bold . variable-pitch)
-			      (Monaco . nil)))
+                              (Helvetica-Bold . variable-pitch)
+                              (Monaco . nil)))
 
 (cl-defstruct sclang-rtf-state
   output font-table font face pos)
@@ -204,197 +228,212 @@
   (defun sclang-code-p (pos) (not (rtf-p pos))))
 
 (defmacro with-sclang-rtf-state-output (state &rest body)
+  "Wrap rtf STATE output around BODY."
   `(with-current-buffer (sclang-rtf-state-output ,state)
      ,@body))
 
 (defmacro sclang-rtf-state-add-font (state font-id font-name)
+  "Add font to STATE font table using FONT-ID and FONT-NAME."
   `(push (cons ,font-id (intern ,font-name)) (sclang-rtf-state-font-table ,state)))
 
 (defmacro sclang-rtf-state-apply (state)
+  "Apply STATE to rtf output."
   (let ((pos (cl-gensym))
-	(font (cl-gensym))
-	(face (cl-gensym)))
+        (font (cl-gensym))
+        (face (cl-gensym)))
     `(with-current-buffer (sclang-rtf-state-output ,state)
        (let ((,pos (or (sclang-rtf-state-pos ,state) (point-min)))
-	     (,font (cdr (assq
-			  (cdr (assoc
-				(sclang-rtf-state-font ,state)
-				(sclang-rtf-state-font-table ,state)))
-			  sclang-rtf-font-map)))
-	     (,face (sclang-rtf-state-face ,state)))
-	 (when (> (point) ,pos)
-	   (if ,font
-	       (add-text-properties
-		,pos (point)
-		(list 'rtf-p t 'rtf-face (append (list ,font) ,face))))
-	   (setf (sclang-rtf-state-pos ,state) (point)))))))
+             (,font (cdr (assq
+                          (cdr (assoc
+                                (sclang-rtf-state-font ,state)
+                                (sclang-rtf-state-font-table ,state)))
+                          sclang-rtf-font-map)))
+             (,face (sclang-rtf-state-face ,state)))
+         (when (> (point) ,pos)
+           (if ,font
+               (add-text-properties
+                ,pos (point)
+                (list 'rtf-p t 'rtf-face (append (list ,font) ,face))))
+           (setf (sclang-rtf-state-pos ,state) (point)))))))
 
 (defmacro sclang-rtf-state-set-font (state font)
+  "Set FONT in STATE."
   `(progn
      (sclang-rtf-state-apply ,state)
      (setf (sclang-rtf-state-font ,state) ,font)))
 
 (defmacro sclang-rtf-state-push-face (state face)
+  "Push FACE to STATE."
   (let ((list (cl-gensym)))
     `(let ((,list (sclang-rtf-state-face state)))
        (sclang-rtf-state-apply ,state)
        (unless (memq ,face ,list)
-	 (setf (sclang-rtf-state-face ,state)
-	       (append ,list (list ,face)))))))
+         (setf (sclang-rtf-state-face ,state)
+               (append ,list (list ,face)))))))
 
 (defmacro sclang-rtf-state-pop-face (state face)
+  "Pop FACE from STATE."
   (let ((list (cl-gensym)))
     `(let* ((,list (sclang-rtf-state-face ,state)))
        (sclang-rtf-state-apply ,state)
        (setf (sclang-rtf-state-face ,state) (delq ,face ,list)))))
 
 (defun sclang-parse-rtf (state)
-  (while (not (eobp))
+    "Parse rtf STATE."
+    (while (not (eobp))
     (cond ((looking-at "{")
-	   ;; container
-	   (let ((beg (point)))
-	     (with-syntax-table sclang-rtf-syntax-table
-	       (forward-list 1))
-	     (save-excursion
-	       (save-restriction
-		 (narrow-to-region (1+ beg) (1- (point)))
-		 (goto-char (point-min))
-		 (sclang-parse-rtf-container state)
-		 (widen)))))
-	  ((or (looking-at "\\\\\\([{}\\\n]\\)")
-	       (looking-at "\\\\\\([^\\ \n]+\\) ?"))
-	   ;; control
-	   (let ((end (match-end 0)))
-	     (sclang-parse-rtf-control state (match-string 1))
-	     (goto-char end)))
-	  ((looking-at "\\([^{\\\n]+\\)")
-	   ;; normal text
-	   (let ((end (match-end 0))
-		 (match (match-string 1)))
-	     (with-sclang-rtf-state-output state (insert match))
-	     (goto-char end)))
-	  (t
-	   ;; never reached (?)
-	   (forward-char 1)))))
+           ;; container
+           (let ((beg (point)))
+             (with-syntax-table sclang-rtf-syntax-table
+               (forward-list 1))
+             (save-excursion
+               (save-restriction
+                 (narrow-to-region (1+ beg) (1- (point)))
+                 (goto-char (point-min))
+                 (sclang-parse-rtf-container state)
+                 (widen)))))
+          ((or (looking-at "\\\\\\([{}\\\n]\\)")
+               (looking-at "\\\\\\([^\\ \n]+\\) ?"))
+           ;; control
+           (let ((end (match-end 0)))
+             (sclang-parse-rtf-control state (match-string 1))
+             (goto-char end)))
+          ((looking-at "\\([^{\\\n]+\\)")
+           ;; normal text
+           (let ((end (match-end 0))
+                 (match (match-string 1)))
+             (with-sclang-rtf-state-output state (insert match))
+             (goto-char end)))
+          (t
+           ;; never reached (?)
+           (forward-char 1)))))
 
 (defun sclang-parse-rtf-container (state)
-  (cond ((looking-at "\\\\rtf1")		; document
-	 (goto-char (match-end 0))
-	 (sclang-parse-rtf state))
-	((looking-at "\\\\fonttbl")		; font table
-	 (goto-char (match-end 0))
-	 (while (looking-at "\\\\\\(f[0-9]+\\)[^ ]* \\([^;]*\\);[^\\]*")
-	   (sclang-rtf-state-add-font state (match-string 1) (match-string 2))
-	   (goto-char (match-end 0))))
-	((looking-at "{\\\\NeXTGraphic \\([^\\]+\\.[a-z]+\\)") ; inline graphic
-	 (let* ((file (match-string 1))
-		(image (and file (create-image (expand-file-name file)))))
-	   (with-sclang-rtf-state-output
-	    state
-	    (if image
-		(insert-image image)
-	      (sclang-rtf-state-push-face state 'italic)
-	      (insert file)
-	      (sclang-rtf-state-pop-face state 'italic)))))
-	))
+  "Parse RTF container.  STATE."
+  (cond ((looking-at "\\\\rtf1")                ; document
+         (goto-char (match-end 0))
+         (sclang-parse-rtf state))
+        ((looking-at "\\\\fonttbl")             ; font table
+         (goto-char (match-end 0))
+         (while (looking-at "\\\\\\(f[0-9]+\\)[^ ]* \\([^;]*\\);[^\\]*")
+           (sclang-rtf-state-add-font state (match-string 1) (match-string 2))
+           (goto-char (match-end 0))))
+        ((looking-at "{\\\\NeXTGraphic \\([^\\]+\\.[a-z]+\\)") ; inline graphic
+         (let* ((file (match-string 1))
+                (image (and file (create-image (expand-file-name file)))))
+           (with-sclang-rtf-state-output
+            state
+            (if image
+                (insert-image image)
+              (sclang-rtf-state-push-face state 'italic)
+              (insert file)
+              (sclang-rtf-state-pop-face state 'italic)))))))
 
 (defun sclang-parse-rtf-control (state ctrl)
+  "Parse RTF control chars.  STATE CTRL."
   (let ((char (aref ctrl 0)))
     (cond ((memq char '(?{ ?} ?\\))
-	   (with-sclang-rtf-state-output state (insert char)))
-	  ((or (eq char ?\n)
-	       (string= ctrl "par"))
-	   (sclang-rtf-state-apply state)
-	   (with-sclang-rtf-state-output
-	    state
-	    (when (sclang-rtf-p (line-beginning-position))
-	      (fill-region (line-beginning-position) (line-end-position)
-			   t t))
-	      (insert ?\n)))
-	  ((string= ctrl "tab")
-	   (with-sclang-rtf-state-output state (insert ?\t)))
-	  ((string= ctrl "b")
-	   (sclang-rtf-state-push-face state 'bold))
-	  ((string= ctrl "b0")
-	   (sclang-rtf-state-pop-face state 'bold))
-	  ((string-match "^f[0-9]+$" ctrl)
-	   (sclang-rtf-state-set-font state ctrl))
-	  )))
+           (with-sclang-rtf-state-output state (insert char)))
+          ((or (eq char ?\n)
+               (string= ctrl "par"))
+           (sclang-rtf-state-apply state)
+           (with-sclang-rtf-state-output
+            state
+            (when (sclang-rtf-p (line-beginning-position))
+              (fill-region (line-beginning-position) (line-end-position)
+                           t t))
+            (insert ?\n)))
+          ((string= ctrl "tab")
+           (with-sclang-rtf-state-output state (insert ?\t)))
+          ((string= ctrl "b")
+           (sclang-rtf-state-push-face state 'bold))
+          ((string= ctrl "b0")
+           (sclang-rtf-state-pop-face state 'bold))
+          ((string-match "^f[0-9]+$" ctrl)
+           (sclang-rtf-state-set-font state ctrl)))))
 
 (defun sclang-convert-rtf-buffer (output)
+  "Convert rtf buffer.  OUTPUT."
   (let ((case-fold-search nil)
-	(fill-column sclang-help-fill-column))
+        (fill-column sclang-help-fill-column))
     (save-excursion
       (goto-char (point-min))
       (when (looking-at "{\\\\rtf1")
-	(let ((state (make-sclang-rtf-state)))
-	  (setf (sclang-rtf-state-output state) output)
-	  (sclang-parse-rtf state)
-	  (sclang-rtf-state-apply state))))))
+        (let ((state (make-sclang-rtf-state)))
+          (setf (sclang-rtf-state-output state) output)
+          (sclang-parse-rtf state)
+          (sclang-rtf-state-apply state))))))
 
 ;; =====================================================================
 ;; help mode
 ;; =====================================================================
 
 (defun sclang-fill-help-syntax-table (table)
+  "Fill help syntax TABLE."
   ;; make ?- be part of symbols for selection and sclang-symbol-at-point
   (modify-syntax-entry ?- "_" table))
 
 (defun sclang-fill-help-mode-map (map)
+  "Fill sclang help mode keymap MAP."
   (define-key map "\C-c}" 'bury-buffer)
   (define-key map "\C-c\C-v" 'sclang-edit-help-file))
 
 (defmacro sclang-help-mode-limit-point-to-code (&rest body)
+  "Limit point to code BODY."
   (let ((min (cl-gensym))
-	(max (cl-gensym))
-	(res (cl-gensym)))
+        (max (cl-gensym))
+        (res (cl-gensym)))
     `(if (and (sclang-code-p (point))
-	      (not (or (bobp) (eobp)))
-	      (sclang-code-p (1- (point)))
-	      (sclang-code-p (1+ (point))))
-	 (let ((,min (previous-single-property-change (point) 'rtf-p (current-buffer) (point-min)))
-	       (,max (next-single-property-change (point) 'rtf-p (current-buffer) (point-max))))
-	   (let ((,res (progn ,@body)))
-	     (cond ((< (point) ,min) (goto-char ,min) nil)
-		   ((> (point) ,max) (goto-char ,max) nil)
-		   (t ,res)))))))
+              (not (or (bobp) (eobp)))
+              (sclang-code-p (1- (point)))
+              (sclang-code-p (1+ (point))))
+         (let ((,min (previous-single-property-change (point) 'rtf-p (current-buffer) (point-min)))
+               (,max (next-single-property-change (point) 'rtf-p (current-buffer) (point-max))))
+           (let ((,res (progn ,@body)))
+             (cond ((< (point) ,min) (goto-char ,min) nil)
+                   ((> (point) ,max) (goto-char ,max) nil)
+                   (t ,res)))))))
 
 (defun sclang-help-mode-beginning-of-defun (&optional arg)
+  "Move to beginning of function (or back ARG)."
   (interactive "p")
   (sclang-help-mode-limit-point-to-code (sclang-beginning-of-defun arg)))
 
 (defun sclang-help-mode-end-of-defun (&optional arg)
+  "Move to end of function (or forward ARG)."
   (interactive "p")
   (sclang-help-mode-limit-point-to-code (sclang-end-of-defun arg)))
 
 (defun sclang-help-mode-fontify-region (start end loudly)
+  "Fontify region from START to END and LOUDLY."
   (cl-flet ((fontify-code
-	  (start end loudly)
-	  (funcall 'font-lock-default-fontify-region start end loudly))
-	 (fontify-non-code
-	  (start end loudly)
-	  (while (< start end)
-	    (let ((value (plist-get (text-properties-at start) 'rtf-face))
-		  (end (next-single-property-change start 'rtf-face (current-buffer) end)))
-		(add-text-properties start end (list 'face (append '(variable-pitch) (list value))))
-		(setq start end)))))
+              (start end loudly)
+              (funcall 'font-lock-default-fontify-region start end loudly))
+            (fontify-non-code
+              (start end loudly)
+              (while (< start end)
+                (let ((value (plist-get (text-properties-at start) 'rtf-face))
+                      (end (next-single-property-change start 'rtf-face (current-buffer) end)))
+                  (add-text-properties start end (list 'face (append '(variable-pitch) (list value))))
+                  (setq start end)))))
     (let ((modified (buffer-modified-p)) (buffer-undo-list t)
-	  (inhibit-read-only t) (inhibit-point-motion-hooks t)
-	  (inhibit-modification-hooks t)
-	  deactivate-mark buffer-file-name buffer-file-truename
-	  (pos start))
+          (inhibit-read-only t) (inhibit-point-motion-hooks t)
+          (inhibit-modification-hooks t)
+          deactivate-mark buffer-file-name buffer-file-truename
+          (pos start))
       (unwind-protect
-	  (while (< pos end)
-	    (let ((end (next-single-property-change pos 'rtf-p (current-buffer) end)))
-	      (if (sclang-rtf-p pos)
-		  (fontify-non-code pos end loudly)
-		(fontify-code pos end loudly))
-	      (setq pos end)))
-	(when (and (not modified) (buffer-modified-p))
-	  (set-buffer-modified-p nil))))))
+          (while (< pos end)
+            (let ((end (next-single-property-change pos 'rtf-p (current-buffer) end)))
+              (if (sclang-rtf-p pos)
+                  (fontify-non-code pos end loudly)
+                (fontify-code pos end loudly))
+              (setq pos end)))
+        (when (and (not modified) (buffer-modified-p))
+          (set-buffer-modified-p nil))))))
 
 
 (defun sclang-help-mode-indent-line ()
+  "Indent sclang code in documentation."
   (if (sclang-code-p (point))
       (sclang-indent-line)
     (insert "\t")))
@@ -403,30 +442,29 @@
   "Major mode for displaying SuperCollider help files.
 \\{sclang-help-mode-map}"
   (let ((file (or (buffer-file-name)
-		  (and (boundp 'sclang-current-help-file)
-		       sclang-current-help-file))))
+                  (and (boundp 'sclang-current-help-file)
+                       sclang-current-help-file))))
     (when file
       (set-visited-file-name nil)
       (setq buffer-auto-save-file-name nil)
       (save-excursion
-	(when (sclang-rtf-file-p file)
-	  (let ((tmp-buffer (generate-new-buffer " *RTF*"))
-		(modified-p (buffer-modified-p)))
-	    (unwind-protect
-		(progn
-		  (sclang-convert-rtf-buffer tmp-buffer)
-		  (toggle-read-only 0)
-		  (erase-buffer)
-		  (insert-buffer-substring tmp-buffer))
-	      (and (buffer-modified-p) (not modified-p) (set-buffer-modified-p nil))
-	      (kill-buffer tmp-buffer))))))
+        (when (sclang-rtf-file-p file)
+          (let ((tmp-buffer (generate-new-buffer " *RTF*"))
+                (modified-p (buffer-modified-p)))
+            (unwind-protect
+                (progn
+                  (sclang-convert-rtf-buffer tmp-buffer)
+                  (read-only-mode)
+                  (erase-buffer)
+                  (insert-buffer-substring tmp-buffer))
+              (and (buffer-modified-p) (not modified-p) (set-buffer-modified-p nil))
+              (kill-buffer tmp-buffer))))))
     (set (make-local-variable 'sclang-help-file) file)
     (setq font-lock-defaults
-	  (append font-lock-defaults
-		  '((font-lock-fontify-region-function . sclang-help-mode-fontify-region))))
+          (append font-lock-defaults
+                  '((font-lock-fontify-region-function . sclang-help-mode-fontify-region))))
     (set (make-local-variable 'beginning-of-defun-function) 'sclang-help-mode-beginning-of-defun)
-    (set (make-local-variable 'indent-line-function) 'sclang-help-mode-indent-line)
-    ))
+    (set (make-local-variable 'indent-line-function) 'sclang-help-mode-indent-line)))
 
 ;; =====================================================================
 ;; help file access
@@ -436,17 +474,18 @@
   "Answer t if PATH should be skipped during help file indexing."
   (let ((directory (file-name-nondirectory path)))
     (cl-some (lambda (regexp) (string-match regexp directory))
-	     '("^\.$" "^\.\.$" "^CVS$" "^\.svn$" "^_darcs$"))))
+             ;; skip "." ".." "CVS" ".svn" and "_darcs" directories
+             '("\\.\\'" "\\.\\.\\'" "^CVS\\'" "^\\.svn$" "^_darcs\\'"))))
 
 (defun sclang-filter-help-directories (list)
   "Remove paths to be skipped from LIST of directories."
   (cl-remove-if (lambda (x)
-		  (or (not (file-directory-p x))
-		      (sclang-skip-help-directory-p x)))
-		list))
+                  (or (not (file-directory-p x))
+                      (sclang-skip-help-directory-p x)))
+                list))
 
 (defun sclang-directory-files-save (directory &optional full match nosort)
-  "Return a list of names of files in DIRECTORY, or nil on error."
+  "List files in DIRECTORY (optionally FULL MATCH NOSORT) or nil."
   (condition-case nil
       (directory-files directory full match nosort)
     (error nil)))
@@ -454,20 +493,20 @@
 ;; (defun sclang-extension-help-directories ()
 ;;   "Build a list of help directories for extensions."
 ;;   (cl-flet ((flatten (seq)
-;; 		  (if (null seq)
-;; 		      seq
-;; 		    (if (listp seq)
-;; 			(reduce 'append (mapcar #'flatten seq))
-;; 		      (list seq)))))
+;;                (if (null seq)
+;;                    seq
+;;                  (if (listp seq)
+;;                      (reduce 'append (mapcar #'flatten seq))
+;;                    (list seq)))))
 ;;     (flatten
 ;;      (mapcar
 ;;       (lambda (dir)
-;; 	(mapcar
-;; 	 (lambda (dir)
-;; 	   (remove-if-not
-;; 	    'file-directory-p
-;; 	    (sclang-directory-files-save dir t "^[Hh][Ee][Ll][Pp]$" t)))
-;; 	 (sclang-filter-help-directories (sclang-directory-files-save dir t))))
+;;      (mapcar
+;;       (lambda (dir)
+;;         (remove-if-not
+;;          'file-directory-p
+;;          (sclang-directory-files-save dir t "^[Hh][Ee][Ll][Pp]$" t)))
+;;       (sclang-filter-help-directories (sclang-directory-files-save dir t))))
 ;;       sclang-extension-path))))
 
 ;; (defun sclang-help-directories ()
@@ -482,11 +521,11 @@
   "Build a help topic alist from directories in DIRS, with initial RESULT."
   (if dirs
       (let* ((files (sclang-directory-files-save (car dirs) t))
-	     (topics (remq nil (mapcar 'sclang-help-topic-name files)))
-	     (new-dirs (sclang-filter-help-directories files)))
-	(sclang-make-help-topic-alist
-	 (append new-dirs (cdr dirs))
-	 (append topics result)))
+             (topics (remq nil (mapcar 'sclang-help-topic-name files)))
+             (new-dirs (sclang-filter-help-directories files)))
+        (sclang-make-help-topic-alist
+         (append new-dirs (cdr dirs))
+         (append topics result)))
     (sort result (lambda (a b) (string< (car a) (car b))))))
 
 (defun sclang-index-help-topics ()
@@ -494,31 +533,28 @@
   (interactive)
   (setq sclang-help-topic-alist nil)
   (let ((case-fold-search nil)
-	(max-specpdl-size 10000)
-	(max-lisp-eval-depth 10000))
+        (max-specpdl-size 10000)
+        (max-lisp-eval-depth 10000))
     (sclang-message "Indexing help topics ...")
     (setq sclang-help-topic-alist
-	  (sclang-make-help-topic-alist (sclang-help-directories) nil))
+          (sclang-make-help-topic-alist (sclang-help-directories) nil))
     (sclang-message "Indexing help topics ... Done")))
 
 (defun sclang-edit-html-help-file ()
   "Edit the help file associated with the current buffer.
 Switches w3m to edit mode (actually HTML mode)."
   (interactive)
-  (w3m-edit-current-url)
-  )
+  (w3m-edit-current-url))
 
 (defun sclang-edit-help-code ()
   "Edit the help file to make code variations.
-Switches to text mode with sclang-minor-mode."
+Switches to text mode with `sclang-minor-mode'."
   (interactive)
   (w3m-copy-buffer)
-;;  (text-mode)
+  ;;  (text-mode)
   (sclang-mode)
-  (toggle-read-only)
-  (rename-buffer "*SC_Help:CodeEdit*")
-  )
-
+  (read-only-mode)
+  (rename-buffer "*SC_Help:CodeEdit*"))
 
 (defun sclang-edit-help-file ()
   "Edit the help file associated with the current buffer.
@@ -526,16 +562,16 @@ Either visit file internally (.sc) or start external editor (.rtf)."
   (interactive)
   (if (and (boundp 'sclang-help-file) sclang-help-file)
       (let ((file sclang-help-file))
-	(if (file-exists-p file)
-	    (if (sclang-rtf-file-p file)
-		(start-process (sclang-make-buffer-name (format "HelpEditor:%s" file))
-			       nil sclang-rtf-editor-program file)
-	      (find-file file))
-	  (if (sclang-html-file-p file)
-	      (w3m-edit-current-url)
-	   ;; (find-file file)
-	   )
-	  (sclang-message "Help file not found")))
+        (if (file-exists-p file)
+            (if (sclang-rtf-file-p file)
+                (start-process (sclang-make-buffer-name (format "HelpEditor:%s" file))
+                               nil sclang-rtf-editor-program file)
+              (find-file file))
+          (if (sclang-html-file-p file)
+              (w3m-edit-current-url)
+            ;; (find-file file)
+            )
+          (sclang-message "Help file not found")))
     (sclang-message "Buffer has no associated help file")))
 
 (defun sclang-help-topic-at-point ()
@@ -543,45 +579,36 @@ Either visit file internally (.sc) or start external editor (.rtf)."
   (save-excursion
     (with-syntax-table sclang-help-mode-syntax-table
       (let (beg end)
-	(skip-syntax-backward "w_")
-	(setq beg (point))
-	(skip-syntax-forward "w_")
-	(setq end (point))
-	(goto-char beg)
-	(car (assoc (buffer-substring-no-properties beg end)
-		    sclang-help-topic-alist))))))
+        (skip-syntax-backward "w_")
+        (setq beg (point))
+        (skip-syntax-forward "w_")
+        (setq end (point))
+        (goto-char beg)
+        (car (assoc (buffer-substring-no-properties beg end)
+                    sclang-help-topic-alist))))))
 
 (defun sclang-goto-help-browser ()
-  "Switch to the *w3m* buffer to browse help files"
+  "Switch to the *w3m* buffer to browse help files."
   (interactive)
   (let* ((buffer-name "*w3m*")
-	 (buffer (get-buffer buffer-name)))
+         (buffer (get-buffer buffer-name)))
     (if buffer
-      (switch-to-buffer buffer)
+        (switch-to-buffer buffer)
       ;; else
       (let* ((buffer-name "*SC_Help:w3m*")
-	     (buffer2 (get-buffer buffer-name)))
-	(if buffer2
-	    (switch-to-buffer buffer2)
-	  ;; else
-	  (sclang-find-help "Help")
-	  )
-	)
-      )
+             (buffer2 (get-buffer buffer-name)))
+        (if buffer2
+            (switch-to-buffer buffer2)
+          ;; else
+          (sclang-find-help "Help"))))
     (if buffer
-	(with-current-buffer buffer
-	  (rename-buffer "*SC_Help:w3m*")
-	  (sclang-help-minor-mode)
-	  ;;(setq buffer-read-only false)
-	  )
-      )
-;    (if buffer
-;
-;      )
-    )
-  )
+        (with-current-buffer buffer
+          (rename-buffer "*SC_Help:w3m*")
+          ;;(setq buffer-read-only false)
+          (sclang-help-minor-mode)))))
 
 (defun sclang-find-help (topic)
+  "Find help for TOPIC."
   (interactive
    (list
     (let ((topic (or (and mark-active (buffer-substring-no-properties (region-beginning) (region-end)))
@@ -609,17 +636,15 @@ Either visit file internally (.sc) or start external editor (.rtf)."
                     (set-buffer-modified-p nil)))
                 (switch-to-buffer buffer))
               (if (sclang-html-file-p file)
-                  (sclang-goto-help-browser))
-              )
+                  (sclang-goto-help-browser)))
           (sclang-message "Help file not found") nil)
       (sclang-message "No help for \"%s\"" topic) nil)))
 
 
 (defun sclang-open-help-gui ()
-  "Open SCDoc Help Browser"
+  "Open SCDoc Help Browser."
   (interactive)
-  (sclang-eval-string (sclang-format "Help.gui"))
-  )
+  (sclang-eval-string (sclang-format "Help.gui")))
 
 (defvar sclang-scdoc-topics (make-hash-table :size 16385)
   "List of all scdoc topics.")
@@ -629,24 +654,23 @@ Either visit file internally (.sc) or start external editor (.rtf)."
  (lambda (list-of-symbols)
    (mapcar (lambda (arg)
              (puthash arg nil sclang-scdoc-topics))
-           list-of-symbols)
-   ))
+           list-of-symbols)))
 
 (defun sclang-find-help-in-gui (topic)
-  "Search for topic in SCDoc Help Browser"
+  "Search for TOPIC in Help Browser."
   (interactive
    (list
     (let ((topic (sclang-symbol-at-point)))
-      (completing-read (format "Help topic%s: " (if topic
-                                                    (format " (default %s)" topic)
-                                                  ""))
-                       sclang-scdoc-topics nil nil nil 'sclang-help-topic-history topic)))
-   )
+      (completing-read
+       (format "Help topic%s: " (if topic
+                                    (format " (default %s)" topic)
+                                  ""))
+       sclang-scdoc-topics nil nil nil 'sclang-help-topic-history topic))))
   (if topic
-      (sclang-eval-string (sclang-format "HelpBrowser.openHelpFor(%o)" topic))
-    (sclang-eval-string (sclang-format "Help.gui"))
-    )
-  )
+      (sclang-eval-string
+       (sclang-format "HelpBrowser.openHelpFor(%o)" topic))
+    (sclang-eval-string
+     (sclang-format "Help.gui"))))
 
 
 ;; =====================================================================
@@ -664,16 +688,18 @@ Either visit file internally (.sc) or start external editor (.rtf)."
           (lambda ()
             (clrhash sclang-scdoc-topics)))
 
-(add-to-list 'auto-mode-alist '("\\.rtf$" . sclang-help-mode))
+(add-to-list 'auto-mode-alist '("\\.rtf\\'" . sclang-help-mode))
+
 ;; ========= ADDITION for HTML help files?? ============
 ;; (add-to-list 'auto-mode-alist '("\\.html$" . sclang-help-mode))
 ;; (setq mm-text-html-renderer 'w3m)
 ;;  (setq mm-inline-text-html-with-images t)
 ;;  (setq mm-inline-text-html-with-w3m-keymap nil)
 ;; =====================================================
+
 (sclang-fill-help-syntax-table sclang-help-mode-syntax-table)
 (sclang-fill-help-mode-map sclang-help-mode-map)
 
 (provide 'sclang-help)
 
-;; EOF
+;;; sclang-help.el ends here

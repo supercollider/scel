@@ -35,4 +35,5 @@
 Bound only when library is installed with SuperCollider.")
 
 (provide 'sclang-vars)
+
 ;;; sclang-vars.el ends here

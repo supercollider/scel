@@ -7,8 +7,9 @@ SuperCollider/Emacs interface
 There are 3 options for installation:
 
 1. Using SuperCollider Quarks (recommended)
-2. From debian package `supercollider-emacs`
-3. From source
+2. Using an Emacs package manager
+3. From debian package `supercollider-emacs`
+4. From source
 
 Option #1 is the best cross-platform option, and is recommended. Whatever option
 you choose, *make sure not to mix installation methods*. In particular, do not
@@ -61,9 +62,11 @@ exec-path.
 (setq exec-path (append exec-path '("/Applications/SuperCollider.app/Contents/MacOS/")))
 ```
 
-#### Installing with an emacs package manager
+### Install Option 2: Emacs package manager
 
-It's completely possible to install with
+The `sclang` package can be installed from [MELPA](https://melpa.org/#/sclang) and configured with [use-package](https://github.com/jwiegley/use-package).
+
+It's possible to install with
 [straight.el](https://github.com/raxod502/straight.el),
 [use-package](https://github.com/jwiegley/use-package),
 [doom](https://github.com/hlissner/doom-emacs), etc. Instructions for doing so
@@ -71,7 +74,7 @@ are beyond the scope of this README, but note that `autoloads` are implemented
 for entry-point functions so if you like to have a speedy start-up time you can
 use the `:defer t` option.
 
-### Install Option 2: Debian package
+### Install Option 3: Debian package
 
 There is a debian package which provides emacs integration called
 `supercollider-emacs`. Option #1 will likely be more recent, but 
@@ -81,7 +84,7 @@ if you prefer you can install the package with:
 sudo apt install supercollider-emacs
 ```
 
-### Install Option 3: Installing from source
+### Install Option 4: Installing from source
 
 If you are building SuperCollider from source, you can optionally compile and
 install this library along with it. The cmake `-DSC_EL` flag controls whether

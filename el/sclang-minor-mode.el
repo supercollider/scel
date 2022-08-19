@@ -1,7 +1,9 @@
-;;; sclang-minor-mode for use in help files
-;;; SuperCollider
-;;; (c) 2007, Marije Baalman - nescivi <nescivi@gmail.com>
-;;;
+;;; sclang-minor-mode.el --- IDE for working with SuperCollider -*- coding: utf-8;
+;;
+;; Copyright (c) 2007, Marije Baalman - nescivi <nescivi@gmail.com>
+
+;;; License:
+
 ;;; This program is free software; you can redistribute it and/or modify
 ;;; it under the terms of the GNU General Public License as published by
 ;;; the Free Software Foundation; either version 2 of the License, or
@@ -16,6 +18,12 @@
 ;;; along with this program; if not, write to the Free Software
 ;;;  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
+
+;;; Commentary:
+;;
+;; sclang-minor-mode for use in help files
+
+;;; Code:
 (require 'sclang-util)
 (require 'sclang-mode)
 
@@ -25,23 +33,23 @@ With no argument, this command toggles the mode.
 Non-null prefix argument turns on the mode.
 Null prefix argument turns off the mode.
 
-When sclang-minor-mode is enabled, you can execute
-sclang code with the normal command C-c C-c and C-c C-d."
- ;; The initial value.
- nil
- ;; The indicator for the mode line.
- " sclang"
- ;; The minor mode bindings.
- '(("\C-c\C-c" . sclang-eval-region-or-line)
-   ("\C-c\C-d" . sclang-eval-region)
-   ("\C-\M-x" . sclang-eval-defun)
-   ("\C-c\C-h" . sclang-find-help)
-   ("\C-\M-h"  . sclang-goto-help-browser)
-   ("\C-c\C-s" . sclang-main-stop)
-   ("\C-c\C-k" . sclang-edit-dev-source)
-))
+When sclang-minor-mode is enabled, you can use the key sequences
+\\<sclang-minor-mode-map>\\[sclang-eval-region-or-line] or \\<sclang-minor-mode-map>\\[sclang-eval-region] to eval sclang code."
+  ;; The initial value.
+  :init-value nil
+  ;; The indicator for the mode line.
+  :lighter " sclang"
+  ;; The minor mode bindings.
+  :keymap '(("\C-c\C-c" . sclang-eval-region-or-line)
+            ("\C-c\C-d" . sclang-eval-region)
+            ("\C-\M-x"  . sclang-eval-defun)
+            ("\C-c\C-h" . sclang-find-help)
+            ("\C-\M-h"  . sclang-goto-help-browser)
+            ("\C-c\C-s" . sclang-main-stop)
+            ("\C-c\C-k" . sclang-edit-dev-source)))
 
 (provide 'sclang-minor-mode)
+
 
 (easy-mmode-define-minor-mode sclang-help-minor-mode
   "Toggle sclang-minor-mode.
@@ -49,29 +57,31 @@ With no argument, this command toggles the mode.
 Non-null prefix argument turns on the mode.
 Null prefix argument turns off the mode.
 
-When sclang-help-minor-mode is enabled, you can execute
-sclang code with the normal command C-c C-c and C-c C-d."
- ;; The initial value.
- nil
- ;; The indicator for the mode line.
- " sclang-help"
- ;; The minor mode bindings.
- '(("\C-c\C-c" . sclang-eval-region-or-line)
-   ("\C-c\C-d" . sclang-eval-region)
-   ("\C-\M-x" . sclang-eval-defun)
-   ("\C-c\C-h" . sclang-find-help)
-   ("\C-c\C-s" . sclang-main-stop)
-   ("\C-c\C-v" . sclang-edit-html-help-file)
-   ("E" . sclang-edit-help-code)
-   ("\C-c\C-k" . sclang-edit-dev-source)
-))
+When sclang-help-minor-mode is enabled, you can use the key sequences
+\\<sclang-minor-mode-map>\\[sclang-eval-region-or-line] or \\<sclang-minor-mode-map>\\[sclang-eval-region] to eval sclang code."
+  ;; The initial value.
+  :init-value nil
+  ;; The indicator for the mode line.
+  :lighter " sclang-help"
+  ;; The minor mode bindings.
+  :keymap '(("\C-c\C-c" . sclang-eval-region-or-line)
+            ("\C-c\C-d" . sclang-eval-region)
+            ("\C-\M-x" . sclang-eval-defun)
+            ("\C-c\C-h" . sclang-find-help)
+            ("\C-c\C-s" . sclang-main-stop)
+            ("\C-c\C-v" . sclang-edit-html-help-file)
+            ("E" . sclang-edit-help-code)
+            ("\C-c\C-k" . sclang-edit-dev-source)))
 
 (provide 'sclang-help-minor-mode)
+
+;; mode hooks
+(defun sclang-minor-hooks ()
+  "Sclang minor mode hooks."
+  (sclang-init-document)
+  (sclang-make-document))
 
 (add-hook 'sclang-help-minor-mode-hook 'sclang-minor-hooks)
 (add-hook 'sclang-minor-mode-hook 'sclang-minor-hooks)
 
-(defun sclang-minor-hooks ()
-  (sclang-init-document)
-  (sclang-make-document)
-  )
+;;; sclang-minor-mode.el ends here

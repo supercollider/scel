@@ -1,9 +1,8 @@
-;;; sclang-widgets.el --- Widget definitions for SCLang
+;;; sclang-widgets.el --- Widget definitions for SCLang -*- coding: utf-8; lexical-binding: t -*-
 
-;; Copyright (C) 2005  Free Software Foundation, Inc.
+;; Copyright (C) 2005 Free Software Foundation, Inc.
 
 ;; Author: Mario Lang <mlang@blind.guru>
-;; Keywords: comm
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -21,8 +20,8 @@
 ;; Boston, MA 02110-1301, USA.
 
 ;;; Commentary:
-
 ;;
+;;  Widget definitions for SCLang
 
 ;;; Code:
 
@@ -30,6 +29,9 @@
 (require 'sclang-util)
 (require 'sclang-language)
 (require 'sclang-interp)
+
+(require 'widget)
+(require 'wid-edit)
 
 (defvar sclang-widgets nil)
 (make-variable-buffer-local 'sclang-widgets)
@@ -45,34 +47,35 @@
   "Create WIDGET at point in the current buffer."
   (widget-specify-insert
    (let ((from (point))
-	 button-begin button-end)
-     (setq button-begin (point))
+         button-begin button-end)
+     (setq button-begin from)
      (insert (widget-get-indirect widget :button-prefix))
 
      (princ (nth (widget-get widget :value) (widget-get widget :states)) (current-buffer))
 
      (insert (widget-get-indirect widget :button-suffix))
-     (setq button-end (point))
+     (setq button-end from)
 
      ;; Specify button, and insert value.
      (and button-begin button-end
-	  (widget-specify-button widget button-begin button-end)))
+          (widget-specify-button widget button-begin button-end)))
    (let ((from (point-min-marker))
-	 (to (point-max-marker)))
+         (to (point-max-marker)))
      (set-marker-insertion-type from t)
      (set-marker-insertion-type to nil)
      (widget-put widget :from from)
      (widget-put widget :to to)))
   (widget-clear-undo))
 
-(defun sclang-widget-button-action (widget event)
+(defun sclang-widget-button-action (widget _event)
+  "Set button action for WIDGET."
   (widget-value-set widget
-		    (if (>= (widget-get widget :value) (1- (length (widget-get widget :states))))
-			0
-		      (1+ (widget-get widget :value))))
+                    (if (>= (widget-get widget :value) (1- (length (widget-get widget :states))))
+                        0
+                      (1+ (widget-get widget :value))))
   (sclang-eval-string
    (sclang-format "EmacsWidget.idmap[%o].valueFromEmacs(%o)"
-		  (widget-get widget :id) (widget-get widget :value))))
+                  (widget-get widget :id) (widget-get widget :value))))
 
 (sclang-set-command-handler
  '_widgetSetStates
@@ -80,9 +83,9 @@
    (cl-multiple-value-bind (buffer id states value) arg
      (with-current-buffer (get-buffer buffer)
        (let ((widget (cdr (cl-find id sclang-widgets :key 'car))))
-	 (widget-put widget :states states)
-	 (widget-value-set widget value)
-	 value)))))
+         (widget-put widget :states states)
+         (widget-value-set widget value)
+         value)))))
 
 (define-widget 'sclang-slider 'default
   "Slider widget."
@@ -94,16 +97,16 @@
   :value-get #'widget-value-value-get
   :value-set #'sclang-widget-slider-value-set
   :action (lambda (widget event)
-	    (let ((pos (if event (posn-point (event-start event)) (point))))
-	      (widget-value-set widget (/ (float (- pos (widget-get widget :from))) (widget-get widget :size))))))
+            (let ((pos (if event (posn-point (event-start event)) (point))))
+              (widget-value-set widget (/ (float (- pos (widget-get widget :from))) (widget-get widget :size))))))
 
 (defun sclang-widget-slider-create (widget)
   "Create WIDGET at point in the current buffer."
   (widget-specify-insert
    (let ((from (point))
-	 (inhibit-redisplay t)
-	 button-begin button-end)
-     (setq button-begin (point))
+         (inhibit-redisplay t)
+         button-begin button-end)
+     (setq button-begin from)
      (insert (widget-get-indirect widget :button-prefix))
 
      (insert-char ?- (widget-get widget :size))
@@ -115,9 +118,9 @@
 
      ;; Specify button
      (and button-begin button-end
-	  (widget-specify-button widget button-begin button-end)))
+          (widget-specify-button widget button-begin button-end)))
    (let ((from (point-min-marker))
-	 (to (point-max-marker)))
+         (to (point-max-marker)))
      (set-marker-insertion-type from t)
      (set-marker-insertion-type to nil)
      (widget-put widget :from from)
@@ -125,6 +128,7 @@
   (widget-clear-undo))
 
 (defun sclang-widget-slider-value-set (widget value)
+  "Set slider WIDGET to VALUE."
   (save-excursion
     (let ((inhibit-read-only t))
       (goto-char (widget-get widget :from))
@@ -133,9 +137,9 @@
       (widget-put widget :value value)
       (goto-char (widget-get widget :from))
       (let ((n (round (* value (widget-get widget :size)))))
-	(widget-put widget :current-pos n)
-	(forward-char n)
-	(insert "|") (delete-char 1)))))
+        (widget-put widget :current-pos n)
+        (forward-char n)
+        (insert "|") (delete-char 1)))))
 
 ;; Class Tree
 
@@ -145,15 +149,16 @@
   :dynargs #'sclang-widget-class-tree-dynargs)
 
 (defun sclang-widget-class-tree-dynargs (widget)
+  "Class tree WIDGET."
   (sclang-eval-sync (sclang-format "EmacsClassTree.dynargs(%o)"
-				   (widget-get widget :tag))))
+                                   (widget-get widget :tag))))
 
 (define-widget 'sclang-file-position 'item
   "File position link for the SCLang Class Tree widget."
   :format "%[%t%]\n"
   :action (lambda (widget event)
-	    (find-file-other-window (widget-get widget :filename))
-	    (goto-char (widget-get widget :char-pos))))
+            (find-file-other-window (widget-get widget :filename))
+            (goto-char (widget-get widget :char-pos))))
 
 (defun sclang-class-tree (class-name)
   "Display a tree-view of the sub-classes and methods of CLASS-NAME."
@@ -161,5 +166,7 @@
    (list (sclang-read-symbol "Class: " "Object" #'sclang-class-name-p)))
   (sclang-eval-string (format "EmacsClassBrowser(%s)" class-name)))
 
+
 (provide 'sclang-widgets)
+
 ;;; sclang-widgets.el ends here

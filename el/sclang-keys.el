@@ -1,5 +1,9 @@
-;; copyright 2003 stefan kersten <steve@k-hornz.de>
+;;; sclang-keys.el --- IDE for working with SuperCollider -*- coding: utf-8;
 ;;
+;; Copyright 2003 stefan kersten <steve@k-hornz.de>
+
+;;; License:
+
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
 ;; published by the Free Software Foundation; either version 2 of the
@@ -15,6 +19,15 @@
 ;; Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301
 ;; USA
 
+
+;;; Commentary:
+;; Read & send keys between Emacs and SuperCollider
+
+;;; Code:
+(eval-and-compile (require 'sclang-util)
+                  (require 'sclang-interp))
+
+
 ;; (defvar sclang-key-table (make-char-table 'foo))
 
 ;; (defun sclang-define-key (char beg end)
@@ -25,10 +38,9 @@
 ;; (defun sclang-execute-key (char)
 ;;   (sclang-eval-string (sclang-format "Emacs.executeKey(%o)" char)))
 
-(eval-and-compile (require 'sclang-util)
-                  (require 'sclang-interp))
 
 (defun sclang-read-keys ()
+  "Read and send keys between Emacs and SuperCollider."
   (interactive)
   (let (char)
     (clear-this-command-keys)
@@ -36,8 +48,10 @@
       (setq char (read-event))
       (clear-this-command-keys)
       (when (characterp char)
-	(message "%s (%d)" (char-to-string char) char)
-	(sclang-eval-string (format "Emacs.keys.at(%d).value(%d)" char char))))))
+        (message "%s (%d)" (char-to-string char) char)
+        (sclang-eval-string (format "Emacs.keys.at(%d).value(%d)" char char))))))
 
-;; EOF
 
+(provide 'sclang-keys)
+
+;;; sclang-keys.el ends here

@@ -1,3 +1,9 @@
+;;; sclang-dev.el ---  IDE for working with SuperCollider -*- coding: utf-8;
+;;
+;; Copyright 2003 stefan kersten <steve@k-hornz.de>
+
+;;; License:
+
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
 ;; published by the Free Software Foundation; either version 2 of the
@@ -13,32 +19,25 @@
 ;; Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301
 ;; USA
 
+
+;;; Commentary:
+;; Edit SuperCollider help files.
+
 (require 'sclang-util)
 (require 'sclang-interp)
 
+;;; Code:
+
 (sclang-set-command-handler
-  'openDevSource
-  (lambda (file)
-   )
-  )
+ 'openDevSource
+ (lambda (file)))
 
 (defun sclang-edit-dev-source ()
   "Edit the help file at the development location."
-;  (sclang-document-name . (prSetTitle (buffer-name)))
   (interactive)
-  (sclang-perform-command 'openDevSource (buffer-file-name))
-  )
+  ;; (sclang-document-name . (prSetTitle (buffer-name)))
+  (sclang-perform-command 'openDevSource (buffer-file-name)))
 
 (provide 'sclang-dev)
 
-;(defun sclang-open-dev-source (file)
-;  "Open the help file at the development location."
-;  (if (sclang-html-file-p file)
-;      (html-mode)
-;    ;; (find-file file)
-;    )
-;  (if ( sclang-sc-file-p file )
-;      (sclang-mode)
-;    )
-;  )
-
+;;; sclang-dev.el ends here
