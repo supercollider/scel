@@ -1,0 +1,34 @@
+TITLE:: EmacsWidget
+SUMMARY:: Abstract superclass for Emacs widgets
+CATEGORIES:: Frontends>Emacs
+RELATED:: Classes/EmacsBuffer, Classes/Emacs
+
+DESCRIPTION::
+An abstract class for Emacs widgets such as link::Classes/EmacsButton::, link::Classes/EmacsPushButton::, link::Classes/EmacsNumber::, link::Classes/EmacsEditableField::
+and link::Classes/EmacsText::.
+
+CLASSMETHODS::
+
+METHOD:: idmap
+An link::Classes/Array:: of widget's IDs. Size of the array is fixed to 1024.
+
+INSTANCEMETHODS::
+
+METHOD:: type
+
+returns:: The type of widget.
+
+METHOD:: buffer
+
+returns:: The link::Classes/EmacsBuffer::.
+
+METHOD:: id
+
+returns:: The ID of widget.
+
+METHOD:: enabled
+Gets/sets the state of the widget.
+ARGUMENT:: argValue
+A link::Classes/Boolean::.
+ARGUMENT:: handler
+A link::Classes/Function:: which will be executed when changing state.
