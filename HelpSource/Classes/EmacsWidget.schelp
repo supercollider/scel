@@ -4,8 +4,7 @@ CATEGORIES:: Frontends>Emacs
 RELATED:: Classes/EmacsBuffer, Classes/Emacs
 
 DESCRIPTION::
-An abstract class for Emacs widgets such as link::Classes/EmacsButton::, link::Classes/EmacsPushButton::, link::Classes/EmacsNumber::, link::Classes/EmacsEditableField::
-and link::Classes/EmacsText::.
+An abstract class for Emacs widgets such as link::Classes/EmacsButton::, link::Classes/EmacsPushButton::, link::Classes/EmacsNumber::, link::Classes/EmacsEditableField:: and link::Classes/EmacsText::.
 
 CLASSMETHODS::
 
