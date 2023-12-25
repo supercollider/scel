@@ -1,6 +1,7 @@
 CLASS:: EmacsBuffer
 summary:: Lightweight Emacs User Interface
 categories:: Frontends
+related:: Classes/Emacs, Classes/EmacsWidget, Classes/EmacsNumber, Classes/EmacsButton, Classes/EmacsPushButton, Classes/EmacsText, Classes/EmacsEditablefield
 
 CLASSMETHODS::
 
@@ -19,6 +20,10 @@ Retrieve an instance by its name.
 ARGUMENT:: name
 The name of the buffer.
 
+
+METHOD:: killed
+Calls the TELETYPE::onClose:: method when the buffer is killed.
+
 INSTANCEMETHODS::
 
 METHOD:: front
@@ -27,6 +32,35 @@ Switch to this buffer in Emacs, making it the current buffer.
 CODE::
 p = EmacsBuffer.new;
 p.front;
+::
+
+METHOD:: name
+Get name of buffer.
+
+METHOD:: free
+Close this buffer. Call the TELETYPE::onClose:: method.
+
+METHOD:: onClose
+A function, which is executed when the buffer is closed.
+code::
+p.onClose // empty on init
+
+p.onClose = { "Bye".postln }
+p.free
+::
+
+METHOD:: use
+
+A helper method is designed to generate a preparatory link::Classes/Array:: for Emacs Lisp code, intended to be executed within an EmacsBuffer. This array can be converted into proper Emacs Lisp code by the TELETYPE::asLispExpression:: method."
+
+code::
+p.use(['widget-insert', "Inserted text"])
+// [with-current-buffer, [get-buffer, *SCWindow*], [widget-insert, Inserted text]] in case p.name == "*SCWindow*"
+
+a = p.use(['widget-insert', "Inserted text"]).asLispExpression
+// (with-current-buffer (get-buffer "*SCWindow*") (widget-insert "Inserted text"))
+
+Emacs.evalLispExpression(a)
 ::
 
 METHOD:: defineKey
@@ -50,6 +84,13 @@ p.defineKey( "hey there", { "hello".postln; } );
 p.front;
 ::
 
+METHOD:: keymap
+A link::Classes/Dictionary:: that holds user-defined key sequences.
+code::
+p.keymap.postln
+::
+
+
 METHOD:: insert
 Insert text.
 
@@ -57,18 +98,17 @@ ARGUMENT:: string
 The text which should be inserted.
 
 CODE::
-// put some text in the buffer:
-
+p.newline
 p.insert( "this is a really interesting text to read in the buffer" );
-p.front;
 ::
+
+subsection:: Change position
 
 METHOD:: newline
 Insert a newline.
 
 CODE::
 p.newline;
-p.front;
 ::
 
 METHOD:: gotoBob
@@ -83,8 +123,12 @@ Move point to a specific character position.
 ARGUMENT:: position
 An integer.
 
+subsection::Widgets
+Emacs widgets are interactive user interface elements used in Emacs for creating dialogues, forms, and other interactive GUI elements within Emacs buffers
+
+
 METHOD:: button
-Create a multistate button.
+Creates an link::Classes/EmacsButton::.
 
 ARGUMENT:: states
 An array of state names.
@@ -99,26 +143,23 @@ ARGUMENT:: suffix
 Text to insert after the current state.
 
 CODE::
-// make a button:
-
+p.newline
 p.button( [ "on", "off", "in between" ], { |v| v.postln; } );
-p.front;
 
+p.newline
 // make a button with a different look:
 p.button( [ "on", "off", "in between" ], { |v| v.postln; }, "******", "+++++" );
-p.front;
 ::
 
 METHOD:: closeButton
-Create a button which will close this buffer.
+Creates a link::Classes/EmacsPushButton:: with predefined action function, which will close this buffer.
 
 CODE::
 p.closeButton;
-p.front;
 ::
 
 METHOD:: editableField
-Create a field which can be edited inline.
+Creates an link::Classes/EmacsEditableField:: which can be edited inline.
 
 ARGUMENT:: tag
 The label of the field.
@@ -130,11 +171,6 @@ ARGUMENT:: action
 A function to call when the user submits the content by pressing enter.
 
 CODE::
-p = EmacsBuffer.new;
+p.newline
 p.editableField( "write something here", "like this?", { |v| v.postln; } );
-p.front;
 ::
-
-METHOD:: free
-Close this buffer.
-
