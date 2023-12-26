@@ -31,3 +31,45 @@ ARGUMENT:: argValue
 A link::Classes/Boolean::.
 ARGUMENT:: handler
 A link::Classes/Function:: which will be executed when changing state.
+
+subsection::Example
+code::
+(
+p = EmacsBuffer.new; // create a buffer:
+p.front; // show the buffer:
+
+EmacsPushButton(p, "Close").action={p.free};
+
+2.do({p.gotoBob; p.newline}); // add some space above
+
+// make 8 numberboxes in a column
+n = Array.fill(8, { |i| var e; p.gotoBob; p.newline;  e = EmacsNumber.new( p, "Box "++i, [0,999999].asSpec, { |v| v.postln; }, value: 100.rand, size: 8 );  e });
+
+3.do({p.gotoBob; p.newline}); // add some space above
+
+p.gotoBob; // goto very begining
+
+t = EmacsText( p, "SuperCollider", 30, \left); // args: buffer, string, size, align
+
+1.do({p.gotoBob; p.newline}); // space ..
+p.gotoBob;
+
+EmacsEditableField( p, "Password", "0123" ).action_( { |v| t.string = v; } );
+
+2.do({p.gotoBob; p.newline}); // space ..
+p.gotoBob;
+
+EmacsPushButton( p, "calculate" ).action_( { f.() } ); // make a button, attach a funcion to it
+
+// super warp 9 function
+f = { fork{200.do({n.choose.value = 999999.rand + 1; t.string = t.string.scramble;0.01.wait; })} };
+)
+
+
+// Erase widgets / clear buffer
+Emacs.evalLispExpression(p.use(['save-current-buffer', ['set-buffer', ['get-buffer', "*SCWindow*"]], ['let', [['inhibit-read-only', 't']], ['with-silent-modifications', ['remove-overlays'], ['erase-buffer']]]]).asLispString)
+
+EmacsText( p, "Enjoy", 30);
+
+p.free
+::
