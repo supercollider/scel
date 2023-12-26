@@ -1,0 +1,75 @@
+TITLE:: EmacsWidget
+SUMMARY:: Abstract superclass for Emacs widgets
+CATEGORIES:: Frontends>Emacs
+RELATED:: Classes/EmacsBuffer, Classes/Emacs
+
+DESCRIPTION::
+An abstract class for Emacs widgets such as link::Classes/EmacsButton::, link::Classes/EmacsPushButton::, link::Classes/EmacsNumber::, link::Classes/EmacsEditableField:: and link::Classes/EmacsText::.
+
+CLASSMETHODS::
+
+METHOD:: idmap
+An link::Classes/Array:: of widget's IDs. Size of the array is fixed to 1024.
+
+INSTANCEMETHODS::
+
+METHOD:: type
+
+returns:: The type of widget.
+
+METHOD:: buffer
+
+returns:: The link::Classes/EmacsBuffer::.
+
+METHOD:: id
+
+returns:: The ID of widget.
+
+METHOD:: enabled
+Gets/sets the state of the widget.
+ARGUMENT:: argValue
+A link::Classes/Boolean::.
+ARGUMENT:: handler
+A link::Classes/Function:: which will be executed when changing state.
+
+subsection::Example
+code::
+(
+p = EmacsBuffer.new; // create a buffer:
+p.front; // show the buffer:
+
+EmacsPushButton(p, "Close").action={p.free};
+
+2.do({p.gotoBob; p.newline}); // add some space above
+
+// make 8 numberboxes in a column
+n = Array.fill(8, { |i| var e; p.gotoBob; p.newline;  e = EmacsNumber.new( p, "Box "++i, [0,999999].asSpec, { |v| v.postln; }, value: 100.rand, size: 8 );  e });
+
+3.do({p.gotoBob; p.newline}); // add some space above
+
+p.gotoBob; // goto very begining
+
+t = EmacsText( p, "SuperCollider", 30, \left); // args: buffer, string, size, align
+
+1.do({p.gotoBob; p.newline}); // space ..
+p.gotoBob;
+
+EmacsEditableField( p, "Password", "0123" ).action_( { |v| t.string = v; } );
+
+2.do({p.gotoBob; p.newline}); // space ..
+p.gotoBob;
+
+EmacsPushButton( p, "calculate" ).action_( { f.() } ); // make a button, attach a funcion to it
+
+// super warp 9 function
+f = { fork{200.do({n.choose.value = 999999.rand + 1; t.string = t.string.scramble;0.01.wait; })} };
+)
+
+
+// Erase widgets / clear buffer
+Emacs.evalLispExpression(p.use(['save-current-buffer', ['set-buffer', ['get-buffer', p.name]], ['let', [['inhibit-read-only', 't']], ['with-silent-modifications', ['remove-overlays'], ['erase-buffer']]]]).asLispString)
+
+EmacsText( p, "Enjoy", 30);
+
+p.free
+::
