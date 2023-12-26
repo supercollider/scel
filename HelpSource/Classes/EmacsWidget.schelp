@@ -67,7 +67,7 @@ f = { fork{200.do({n.choose.value = 999999.rand + 1; t.string = t.string.scrambl
 
 
 // Erase widgets / clear buffer
-Emacs.evalLispExpression(p.use(['save-current-buffer', ['set-buffer', ['get-buffer', "*SCWindow*"]], ['let', [['inhibit-read-only', 't']], ['with-silent-modifications', ['remove-overlays'], ['erase-buffer']]]]).asLispString)
+Emacs.evalLispExpression(p.use(['save-current-buffer', ['set-buffer', ['get-buffer', p.name]], ['let', [['inhibit-read-only', 't']], ['with-silent-modifications', ['remove-overlays'], ['erase-buffer']]]]).asLispString)
 
 EmacsText( p, "Enjoy", 30);
 
