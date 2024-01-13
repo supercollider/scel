@@ -28,10 +28,11 @@ Null prefix argument turns off the mode.
 When sclang-minor-mode is enabled, you can execute
 sclang code with the normal command C-c C-c and C-c C-d."
  ;; The initial value.
- nil
+ :init-value nil
  ;; The indicator for the mode line.
- " sclang"
+ :lighter " sclang"
  ;; The minor mode bindings.
+ :keymap
  '(("\C-c\C-c" . sclang-eval-region-or-line)
    ("\C-c\C-d" . sclang-eval-region)
    ("\C-\M-x" . sclang-eval-defun)
@@ -52,10 +53,11 @@ Null prefix argument turns off the mode.
 When sclang-help-minor-mode is enabled, you can execute
 sclang code with the normal command C-c C-c and C-c C-d."
  ;; The initial value.
- nil
+ :init-value nil
  ;; The indicator for the mode line.
- " sclang-help"
+ :lighter " sclang-help"
  ;; The minor mode bindings.
+ :keymap
  '(("\C-c\C-c" . sclang-eval-region-or-line)
    ("\C-c\C-d" . sclang-eval-region)
    ("\C-\M-x" . sclang-eval-defun)
