@@ -28,17 +28,17 @@ Null prefix argument turns off the mode.
 When sclang-minor-mode is enabled, you can execute
 sclang code with the normal command C-c C-c and C-c C-d."
  ;; The initial value.
- nil
+ :init-value nil
  ;; The indicator for the mode line.
- " sclang"
+ :lighter " sclang"
  ;; The minor mode bindings.
- '(("\C-c\C-c" . sclang-eval-region-or-line)
-   ("\C-c\C-d" . sclang-eval-region)
-   ("\C-\M-x" . sclang-eval-defun)
-   ("\C-c\C-h" . sclang-find-help)
-   ("\C-\M-h"  . sclang-goto-help-browser)
-   ("\C-c\C-s" . sclang-main-stop)
-   ("\C-c\C-k" . sclang-edit-dev-source)
+ :keymap '(("\C-c\C-c" . sclang-eval-region-or-line)
+	   ("\C-c\C-d" . sclang-eval-region)
+	   ("\C-\M-x" . sclang-eval-defun)
+	   ("\C-c\C-h" . sclang-find-help)
+	   ("\C-\M-h"  . sclang-goto-help-browser)
+	   ("\C-c\C-s" . sclang-main-stop)
+	   ("\C-c\C-k" . sclang-edit-dev-source)
 ))
 
 (provide 'sclang-minor-mode)
@@ -52,18 +52,18 @@ Null prefix argument turns off the mode.
 When sclang-help-minor-mode is enabled, you can execute
 sclang code with the normal command C-c C-c and C-c C-d."
  ;; The initial value.
- nil
+ :init-value nil
  ;; The indicator for the mode line.
- " sclang-help"
+ :lighter " sclang-help"
  ;; The minor mode bindings.
- '(("\C-c\C-c" . sclang-eval-region-or-line)
-   ("\C-c\C-d" . sclang-eval-region)
-   ("\C-\M-x" . sclang-eval-defun)
-   ("\C-c\C-h" . sclang-find-help)
-   ("\C-c\C-s" . sclang-main-stop)
-   ("\C-c\C-v" . sclang-edit-html-help-file)
-   ("E" . sclang-edit-help-code)
-   ("\C-c\C-k" . sclang-edit-dev-source)
+ :keymap '(("\C-c\C-c" . sclang-eval-region-or-line)
+	   ("\C-c\C-d" . sclang-eval-region)
+	   ("\C-\M-x" . sclang-eval-defun)
+	   ("\C-c\C-h" . sclang-find-help)
+	   ("\C-c\C-s" . sclang-main-stop)
+	   ("\C-c\C-v" . sclang-edit-html-help-file)
+	   ("E" . sclang-edit-help-code)
+	   ("\C-c\C-k" . sclang-edit-dev-source)
 ))
 
 (provide 'sclang-help-minor-mode)
