@@ -1,0 +1,25 @@
+TITLE:: Emacs
+summary:: a little frontend for the legendary editor
+categories:: Frontends>Emacs
+related:: Classes/EmacsBuffer, Reference/EmacsEditor
+
+DESCRIPTION::
+A little frontend for the legendary editor.
+
+CLASSMETHODS::
+
+METHOD:: evalLispExpression
+Evaulates a emacs lisp code.
+
+code::
+Emacs.evalLispExpression(['sclang-switch-to-workspace'])
+::
+
+METHOD:: message
+Display a formatted string with arguments in the Emacs's minubuffer.The % character in the format string is replaced by a string representation of an argument. To print a % character use \\% .
+
+code::
+Emacs.message("Just a text")
+a = 433
+Emacs.message("Just a number: %d", a)
+::
