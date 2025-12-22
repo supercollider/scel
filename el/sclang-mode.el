@@ -655,6 +655,8 @@ Returns the column to indent to."
        'sclang-font-lock-syntactic-face)
   (set (make-local-variable 'font-lock-defaults)
        sclang-font-lock-defaults)
+  ;; eldoc
+  (set (make-local-variable 'eldoc-documentation-function) 'sclang-show-method-args)
   ;; ---
   nil)
 

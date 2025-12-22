@@ -457,9 +457,10 @@ are considered."
   "Function used for `completion-at-point-functions' in `sclang-mode'."
   (let* ((end (point))
 	 (beg (save-excursion
-		(backward-sexp 1)
-		(skip-syntax-forward "'")
-		(point)))
+		(or (ignore-errors (backward-sexp 1)
+		                   (skip-syntax-forward "'")
+		                   (point))
+                    (point))))
 	 (pattern (buffer-substring-no-properties beg end))
 	 (case-fold-search nil)
 	 (predicate (if (sclang-class-name-p pattern)
