@@ -255,11 +255,11 @@
     (while continue
       (setq res (re-search-forward regexp limit t))
       (if (or (null res) (null sclang-class-list))
-          (setq continue nil)
-        (let ((thing (thing-at-point 'word)))
-          (if (null thing)
-              (setq res nil continue nil)
-            (when (cl-position (substring-no-properties thing) sclang-class-list :test 'equal)
+        (setq continue nil)
+        (let ((word (current-word 'strict 'really-word)))
+          (if (null word)
+            (setq res nil continue nil)
+            (when (cl-position word sclang-class-list :test 'equal)
               (setq continue nil))))))
     res))
 
