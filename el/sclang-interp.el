@@ -428,7 +428,8 @@ Change this if \"cat\" has a non-standard name or location."
     (delete-process sclang-cmd-helper-proc))
   ;; the real command process should now quit automatically,
   ;; since there is no more writers to the command fifo
-  (sclang-release-command-fifo))
+  (sclang-release-command-fifo)
+  (setq sclang-command-process-previous nil))
 
 (defvar sclang-command-process-previous nil
   "Unprocessed command process output.")
