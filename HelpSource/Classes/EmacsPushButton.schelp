@@ -1,0 +1,44 @@
+ITLE:: EmacsPushButton
+SUMMARY:: Push button widget
+CATEGORIES:: Frontends>Emacs
+RELATED:: Classes/EmacsBuffer, Classes/EmacsWidget, Classes/EmacsButton
+
+DESCRIPTION::
+An Emacs button widget with one state.
+
+CLASSMETHODS::
+
+METHOD:: new
+
+ARGUMENT:: buffer
+An link::Classes/EmacsBuffer:: into which the widget should be placed. The widget will be positioned at the current cursor location.
+
+ARGUMENT:: tag
+Button label.
+
+
+INSTANCEMETHODS::
+
+METHOD:: action
+Get/set the button press action;
+
+
+EXAMPLES::
+
+code::
+p = EmacsBuffer.new; // create an Emacs's buffer for the widget
+p.front; // Bring it up
+
+b = EmacsPushButton( p, "I am a push button" ).action_( { "Do it!".postln; } );
+
+b.action = { "New cool action".postln} // action could be changed
+
+// inherited from EmacsWidget
+b.id
+b.type
+b.enabled // true
+b.enabled = false
+b.enabled = true
+
+p.free; // close the EmacsBuffer
+::
