@@ -1,0 +1,57 @@
+TITLE:: EmacsNumber
+summary:: Widget for number input
+categories:: Frontends>Emacs
+related:: Classes/EmacsBuffer, Classes/EmacsWidget
+
+DESCRIPTION::
+Emacs's widget for number input allows you to edit a number in an editable field.
+
+CLASSMETHODS::
+
+METHOD:: new
+
+ARGUMENT:: buffer
+An link::Classes/EmacsBuffer:: into which the widget should be placed. The widget will be positioned at the current cursor location.
+
+ARGUMENT:: tag
+Title for the field.
+
+ARGUMENT:: spec
+A link::Classes/ControlSpec:: of values.
+
+ARGUMENT:: action
+A link::Classes/Function:: which will be evaulated when Enter is pressed.
+
+ARGUMENT:: value
+Default value
+
+ARGUMENT:: size
+Lenght of the field.
+
+INSTANCEMETHODS::
+
+METHOD:: spec
+Gets/sets a link::Classes/ControlSpec::
+
+METHOD:: action
+Gets/sets the action.
+
+METHOD:: value
+Gets/sets the value of the field.
+
+
+EXAMPLES::
+
+code::
+p = EmacsBuffer.new("Number box example").front
+n = EmacsNumber.new( buffer: p, tag: "number box", spec: [0,100].asSpec, action: { |v| v.postln; }, value:3, size:8 );
+n.action = {|it| (it*2).postln}
+n.value.postln
+n.value = 100.rand
+
+// from EmacsWidget
+n.enabled_(false)
+n.enabled_(true)
+
+p.free
+::
