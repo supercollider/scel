@@ -184,6 +184,11 @@ If EOB-P is non-nil, positions cursor at end of buffer."
   :version "21.3"
   :type 'boolean)
 
+(defcustom sclang-use-pw-jack nil
+  "Use the pw-jack command to launch `sclang-program` to use PipeWire's jack implementation."
+  :group 'sclang-options
+  :version "21.3"
+  :type 'boolean)
 ;; =====================================================================
 ;; helper functions
 ;; =====================================================================
@@ -284,6 +289,8 @@ If EOB-P is non-nil, positions cursor at end of buffer."
 (defun sclang-make-options ()
   (let ((default-directory ""))
     (nconc
+     (when sclang-use-pw-jack
+       (list sclang-program))
      (when (and sclang-runtime-directory
 		(file-directory-p sclang-runtime-directory))
        (list "-d" (expand-file-name sclang-runtime-directory)))
@@ -314,7 +321,9 @@ If EOB-P is non-nil, positions cursor at end of buffer."
   (let ((process-connection-type nil))
     (let ((proc (apply 'start-process
 		       sclang-process sclang-post-buffer
-		       sclang-program (sclang-make-options))))
+		       (if sclang-use-pw-jack "pw-jack"
+			 sclang-program)
+		       (sclang-make-options))))
       (set-process-sentinel proc 'sclang-process-sentinel)
       (set-process-filter proc 'sclang-process-filter)
       (set-process-coding-system proc 'mule-utf-8 'mule-utf-8)
