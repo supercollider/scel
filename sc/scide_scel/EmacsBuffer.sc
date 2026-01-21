@@ -118,26 +118,26 @@ EmacsWidget {
 	wPut {|argKey, argValue, handler|
 		Emacs.evalLispExpression(
 			buffer.use(['widget-put',
-				[\cdr, [\find, id, 'sclang-widgets', ':key', [\quote, \car]]],
+				[\cdr, ['cl-find', id, 'sclang-widgets', ':key', [\quote, \car]]],
 				(':'++argKey).asSymbol,
 				[\quote, argValue]]).asLispString, handler)
 	}
 	wValueSet {|argValue, handler|
 		Emacs.evalLispExpression(
 			buffer.use(['widget-value-set',
-				[\cdr, [\find, id, 'sclang-widgets', ':key', [\quote, \car]]],
+				[\cdr, ['cl-find', id, 'sclang-widgets', ':key', [\quote, \car]]],
 				argValue]).asLispString, handler)
 	}
 	enabled_ {|argValue, handler|
 		if (argValue) {
 			Emacs.evalLispExpression(
 				buffer.use(['widget-apply',
-					[\cdr, [\find, id, 'sclang-widgets', ':key', [\quote, \car]]],
+					[\cdr, ['cl-find', id, 'sclang-widgets', ':key', [\quote, \car]]],
 					':activate'], \nil).asLispString, {enabled=true;handler.value})
 		} {
 			Emacs.evalLispExpression(
 				buffer.use(['widget-apply',
-					[\cdr, [\find, id, 'sclang-widgets', ':key', [\quote, \car]]],
+					[\cdr, ['cl-find', id, 'sclang-widgets', ':key', [\quote, \car]]],
 					':deactivate'], \nil).asLispString, {enabled=false;handler.value})
 		}
 	}
@@ -199,7 +199,7 @@ EmacsNumber : EmacsWidget {
 		Emacs.evalLispExpression(
 			buffer.use(
 				['save-excursion',
-					['widget-value-set', [\cdr, [\find, id, 'sclang-widgets', ':key', [\quote, \car]]], argValue],
+					['widget-value-set', [\cdr, ['cl-find', id, 'sclang-widgets', ':key', [\quote, \car]]], argValue],
 					['widget-setup']],
 				argValue).asLispString,
 			{|result|value=result})
@@ -226,13 +226,6 @@ EmacsButton : EmacsWidget {
 	states_ {|argStates|
 		states=argStates;
 		Emacs.sendToLisp(\_widgetSetStates, [buffer.name, id, states, value]);
-		/*		Emacs.evalLispExpression(
-			buffer.use(
-				[\let, [[\widget, [\cdr, [\find, id, 'sclang-widgets', ':key', [\quote, \car]]]],
-					[\states, [\quote, states]]],
-					['widget-put', \widget, ':states', \states],
-					['widget-value-set', \widget, [\nth, value, \states]]]
-			).asLispString) */
 	}
 	initStates {|argStates|states=argStates}
 	initValue {|argValue|value=argValue}
